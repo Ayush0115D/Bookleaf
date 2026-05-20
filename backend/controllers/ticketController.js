@@ -19,10 +19,18 @@ exports.createTicket = async (req, res, next) => {
       messages: [{ sender: 'author', text: description }],
     });
 
-    const aiResult = await classifyTicket(subject, description);
-    ticket.category = aiResult.category;
-    ticket.priority = aiResult.priority;
-    ticket.aiClassified = true;
+    let aiResult = { category: 'General Inquiry', priority: 'Medium', reasoning: 'Classification pending' };
+    try {
+      aiResult = await classifyTicket(subject, description);
+      ticket.category = aiResult.category;
+      ticket.priority = aiResult.priority;
+      ticket.aiClassified = true;
+    } catch (aiError) {
+      console.error('AI classification failed during ticket creation:', aiError.message);
+      ticket.category = 'General Inquiry';
+      ticket.priority = 'Medium';
+      ticket.aiClassified = false;
+    }
 
     await ticket.save();
 

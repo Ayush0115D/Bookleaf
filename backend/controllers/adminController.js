@@ -145,6 +145,11 @@ exports.generateDraft = async (req, res, next) => {
       return res.status(404).json({ error: 'Ticket not found' });
     }
 
+    const recentMessages = ticket.messages.slice(-4).map((m) => ({
+      sender: m.sender,
+      text: m.text.substring(0, 500),
+    }));
+
     const draft = await generateDraftResponse({
       subject: ticket.subject,
       description: ticket.description,
@@ -152,6 +157,8 @@ exports.generateDraft = async (req, res, next) => {
       priority: ticket.priority,
       authorName: ticket.authorId?.name,
       bookTitle: ticket.bookId?.title,
+      bookStatus: ticket.bookId?.status,
+      recentMessages,
     });
 
     res.json({ draft });
@@ -173,7 +180,12 @@ exports.reclassifyTicket = async (req, res, next) => {
     ticket.aiClassified = true;
     await ticket.save();
 
-    res.json({ ticket, aiResult });
+    const populated = await Ticket.findById(ticket._id)
+      .populate('authorId', 'name email')
+      .populate('bookId', 'title isbn')
+      .populate('assignedTo', 'name email');
+
+    res.json({ ticket: populated, aiResult });
   } catch (error) {
     next(error);
   }

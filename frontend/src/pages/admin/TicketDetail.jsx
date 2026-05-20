@@ -208,6 +208,48 @@ export default function TicketDetail() {
 
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-lg shadow">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold">AI Assistant</h3>
+              {ticket.aiClassified && (
+                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">AI Powered</span>
+              )}
+            </div>
+
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Classification</span>
+                <span className="font-medium">{ticket.category}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Priority Score</span>
+                <span className={`font-medium ${ticket.priority === 'Critical' ? 'text-red-600' : ticket.priority === 'High' ? 'text-orange-600' : ''}`}>
+                  {ticket.priority}
+                </span>
+              </div>
+              {ticket.aiClassified && (
+                <p className="text-xs text-gray-400 italic">
+                  AI auto-classified on creation. Use the dropdowns below to override.
+                </p>
+              )}
+              <button
+                onClick={async () => {
+                  try {
+                    setMessage('Re-classifying with AI...');
+                    const res = await api.post(`/admin/tickets/${id}/reclassify`);
+                    setTicket(res.data.ticket);
+                    setMessage('AI re-classification complete');
+                  } catch (err) {
+                    setMessage('Re-classification failed');
+                  }
+                }}
+                className="w-full bg-purple-600 text-white py-1.5 rounded text-sm hover:bg-purple-700"
+              >
+                Re-classify with AI
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="font-bold mb-4">Ticket Management</h3>
 
             <div className="space-y-4">

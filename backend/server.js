@@ -11,6 +11,7 @@ const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 const setupSocket = require('./sockets/ticketSocket');
 const seedDatabase = require('./seeds/seed');
+const { getAIStatus } = require('./services/aiService');
 
 const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
@@ -38,6 +39,10 @@ app.set('io', io);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/ai/status', (req, res) => {
+  res.json(getAIStatus());
 });
 
 app.use('/api/auth', authRoutes);

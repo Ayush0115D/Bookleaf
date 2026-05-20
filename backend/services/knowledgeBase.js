@@ -1,46 +1,73 @@
-const KNOWLEDGE_BASE = `
-BookLeaf Publishing - Knowledge Base
+const sections = {
+  company: `BookLeaf Publishing is a self-publishing company operating in India and the US.
+- Publishing packages: Standard Free (no upfront cost) and Bestseller Breakthrough (premium with marketing).
+- Services: cover design, typesetting, ISBN assignment, printing, distribution, royalty management.
+- In-house printing facility and warehouse in Delhi. Print partners: Repro India and Epitome Books.`,
 
-COMPANY OVERVIEW:
-- BookLeaf Publishing is a self-publishing company operating in India and the US.
-- We offer publishing packages: Standard Free (no upfront cost) and Bestseller Breakthrough (premium, paid package with marketing and distribution add-ons).
-- We handle cover design, typesetting, ISBN assignment, printing, distribution, and royalty management for our authors.
-- Our in-house printing facility and warehouse are located in Delhi. We also work with print partners including Repro India and Epitome Books.
+  royalty: `ROYALTY POLICY:
+- 80/20 royalty split: 80% net profit to author, 20% to BookLeaf.
+- Net profit = MRP - printing cost - platform commission (Amazon/Flipkart) - shipping.
+- Royalties calculated quarterly, paid within 45 days of quarter ending.
+- Minimum payout threshold: Rs 1,000. Below this rolls over to next quarter.
+- Payouts via bank transfer to linked account in author dashboard.
+- Authors can view detailed royalty breakdown per platform in their dashboard.`,
 
-ROYALTY POLICY:
-- BookLeaf follows an 80/20 royalty split: 80% of the net profit per book goes to the author, 20% to BookLeaf.
-- Net profit = MRP minus printing cost, platform commission (Amazon/Flipkart), and shipping charges.
-- Royalties are calculated quarterly and paid within 45 days of the quarter ending.
-- Minimum payout threshold: ₹1,000. If accumulated royalties are below this, they roll over to the next quarter.
-- Payouts are made via bank transfer to the account linked in the author's dashboard.
-- Authors can view a detailed royalty breakdown in their dashboard, showing sales figures per platform.
+  isbn: `ISBN POLICY:
+- Every book gets a unique ISBN assigned by BookLeaf.
+- ISBNs registered under BookLeaf's publisher imprint.
+- Authors wanting ISBN under their own imprint must obtain it independently.
+- ISBN errors (duplicate, wrong book linked) treated as high-priority, escalated to production team.`,
 
-ISBN POLICY:
-- Every book published through BookLeaf receives a unique ISBN assigned by BookLeaf.
-- ISBNs are registered under BookLeaf's publisher imprint. If an author wants an ISBN under their own imprint, they need to obtain it independently.
-- If an author reports an ISBN error (duplicate, wrong book linked), it is treated as a high-priority issue and escalated to the production team.
-
-PRINTING & QUALITY:
-- In-house printing handles most orders. Overflow or specific format requirements go to Repro India or Epitome Books.
+  printing: `PRINTING & QUALITY:
+- In-house printing for most orders. Repro India or Epitome Books for overflow/special formats.
 - Standard print turnaround: 5-7 business days from order confirmation.
-- If an author reports a quality issue (misprints, binding defects, color inconsistency), BookLeaf arranges a free reprint after verification. The author may need to share photos of the defective copy.
+- Quality issues (misprints, binding defects, color inconsistency): free reprint after verification.
+- Author may need to share photos of defective copy.`,
 
-DISTRIBUTION & AVAILABILITY:
-- Books are listed on Amazon India, Flipkart, Amazon US, Amazon UK, and the BookLeaf Store.
-- New listings typically go live within 7-10 business days after publication is complete.
-- If a book is showing as unavailable on a platform, it usually indicates a stock sync issue - BookLeaf's team can trigger a re-sync within 24-48 hours.
+  distribution: `DISTRIBUTION & AVAILABILITY:
+- Books listed on Amazon India, Flipkart, Amazon US, Amazon UK, BookLeaf Store.
+- New listings go live within 7-10 business days after publication.
+- "Currently Unavailable" = stock sync issue. Team can trigger re-sync within 24-48 hours.`,
 
-PRODUCTION STAGES:
-- A book goes through the following stages: Manuscript Received → Editing (if opted) → Cover Design → Typesetting → Proofreading → ISBN Assignment → Printing → Distribution Setup → Published & Live.
-- Authors are updated at each stage via email. Delays typically happen at Cover Design (waiting for author approval) and Proofreading (revision rounds).
+  production: `PRODUCTION STAGES:
+- Manuscript Received > Editing (if opted) > Cover Design > Typesetting > Proofreading > ISBN Assignment > Printing > Distribution Setup > Published & Live.
+- Authors updated at each stage via email.
+- Delays typically at Cover Design (awaiting author approval) and Proofreading (revision rounds).`,
 
-COMMUNICATION TONE GUIDELINES:
-- Always empathetic and professional. Authors are our partners, not customers to be managed.
-- Acknowledge the author's concern before jumping to solutions.
-- Be specific: include actual numbers, dates, and statuses wherever possible rather than vague reassurances.
-- If something is BookLeaf's fault (delayed royalties, ISBN error), own it directly. No corporate deflection.
-- If the issue requires escalation or investigation, give a clear timeline ("Our team will look into this and get back to you within 48 hours") rather than open-ended promises.
-- Always end with a clear next step for the author and/or the BookLeaf team.
-`;
+  tone: `COMMUNICATION TONE GUIDELINES:
+- Always empathetic and professional. Authors are partners, not customers.
+- Acknowledge concern before solutions. Be specific with numbers, dates, statuses.
+- If BookLeaf's fault (delayed royalties, ISBN error), own it directly.
+- For escalations, give clear timeline ("within 48 hours") not open-ended promises.
+- End with clear next step for author and/or BookLeaf team.`,
+};
 
-module.exports = KNOWLEDGE_BASE;
+const allSections = Object.values(sections).join('\n\n');
+
+function getContextForCategory(category) {
+  const relevant = [sections.company, sections.tone];
+
+  switch (category) {
+    case 'Royalty & Payments':
+      relevant.push(sections.royalty);
+      break;
+    case 'ISBN & Metadata Issues':
+      relevant.push(sections.isbn);
+      break;
+    case 'Printing & Quality':
+      relevant.push(sections.printing);
+      break;
+    case 'Distribution & Availability':
+      relevant.push(sections.distribution);
+      break;
+    case 'Book Status & Production Updates':
+      relevant.push(sections.production);
+      break;
+    default:
+      relevant.push(allSections);
+  }
+
+  return relevant.join('\n\n');
+}
+
+module.exports = { sections, getContextForCategory, allSections };

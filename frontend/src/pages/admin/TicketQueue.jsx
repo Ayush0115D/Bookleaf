@@ -5,17 +5,17 @@ import socket from '../../services/socket';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 const statusColors = {
-  Open: 'bg-amber-50 text-amber-700 border-amber-200',
-  'In Progress': 'bg-blue-50 text-blue-700 border-blue-200',
-  Resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  Closed: 'bg-gray-50 text-gray-700 border-gray-200',
+  Open: 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
+  'In Progress': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+  Resolved: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
+  Closed: 'bg-gray-50 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/20',
 };
 
 const priorityColors = {
-  Critical: 'bg-red-50 text-red-700 border-red-200',
-  High: 'bg-orange-50 text-orange-700 border-orange-200',
-  Medium: 'bg-blue-50 text-blue-700 border-blue-200',
-  Low: 'bg-gray-50 text-gray-700 border-gray-200',
+  Critical: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20',
+  High: 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/20',
+  Medium: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+  Low: 'bg-gray-50 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/20',
 };
 
 const categories = [
@@ -49,7 +49,7 @@ function FilterIcon() {
 
 function TicketIcon() {
   return (
-    <svg className="w-12 h-12 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg className="w-12 h-12 text-gray-300 dark:text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
       <path d="M9 9h.01" />
       <path d="M15 9h.01" />
@@ -238,7 +238,7 @@ export default function TicketQueue() {
                     {new Date(ticket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right">
-                    <span className="inline-flex items-center gap-1 text-gold-600 dark:text-gold-400 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="inline-flex items-center gap-1 text-gold-600 dark:text-gold-400 text-sm font-medium">
                       View
                       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="9 18 15 12 9 6" />
@@ -253,7 +253,7 @@ export default function TicketQueue() {
                     <div className="flex flex-col items-center gap-3">
                       <TicketIcon />
                       <div>
-                        <p className="text-gray-500 text-sm font-medium">No tickets found</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">No tickets found</p>
                         {hasActiveFilters && (
                           <button onClick={clearFilters} className="text-gold-600 text-sm hover:underline mt-1">
                             Try clearing your filters

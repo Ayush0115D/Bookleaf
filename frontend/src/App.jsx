@@ -30,7 +30,7 @@ function AppLayout() {
   const dashboardPath = user.role === 'admin' ? '/admin' : '/author';
 
   return (
-    <div className="min-h-screen bg-surface-dark transition-colors duration-200">
+    <div className="min-h-screen bg-surface dark:bg-surface-dark transition-colors duration-200">
       <div className="fixed inset-0 bg-grid pointer-events-none" />
       <Navbar />
       <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in">

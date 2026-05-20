@@ -4,17 +4,17 @@ import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 const statusColors = {
-  Open: 'bg-amber-50 text-amber-700 border-amber-200',
-  'In Progress': 'bg-blue-50 text-blue-700 border-blue-200',
-  Resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  Closed: 'bg-gray-50 text-gray-700 border-gray-200',
+  Open: 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
+  'In Progress': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+  Resolved: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
+  Closed: 'bg-gray-50 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/20',
 };
 
 const priorityColors = {
-  Critical: 'bg-red-50 text-red-700 border-red-200',
-  High: 'bg-orange-50 text-orange-700 border-orange-200',
-  Medium: 'bg-blue-50 text-blue-700 border-blue-200',
-  Low: 'bg-gray-50 text-gray-700 border-gray-200',
+  Critical: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20',
+  High: 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/20',
+  Medium: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+  Low: 'bg-gray-50 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/20',
 };
 
 const categories = [
@@ -178,7 +178,7 @@ export default function TicketDetail() {
   if (loading) return <LoadingSpinner />;
   if (!ticket) return (
     <div className="text-center py-20">
-      <p className="text-gray-500 text-lg">Ticket not found</p>
+      <p className="text-gray-500 dark:text-gray-400 text-lg">Ticket not found</p>
       <button onClick={() => navigate('/admin/tickets')} className="mt-4 text-gold-600 text-sm hover:underline">Back to Queue</button>
     </div>
   );
@@ -406,7 +406,7 @@ export default function TicketDetail() {
                 <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Status</label>
                 <select
                   value={ticket.status} onChange={(e) => updateField('status', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white"
+                  className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white dark:bg-gray-700 dark:text-gray-100"
                 >
                   {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
@@ -416,7 +416,7 @@ export default function TicketDetail() {
                 <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Category</label>
                 <select
                   value={ticket.category} onChange={(e) => updateField('category', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white"
+                  className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white dark:bg-gray-700 dark:text-gray-100"
                 >
                   {categories.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -426,7 +426,7 @@ export default function TicketDetail() {
                 <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Priority</label>
                 <select
                   value={ticket.priority} onChange={(e) => updateField('priority', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white"
+                  className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white dark:bg-gray-700 dark:text-gray-100"
                 >
                   {priorities.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>

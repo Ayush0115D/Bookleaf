@@ -28,7 +28,7 @@ function MessageIcon() {
 
 function TicketIcon() {
   return (
-    <svg className="w-12 h-12 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg className="w-12 h-12 text-gray-300 dark:text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
       <path d="M9 9h.01" />
       <path d="M15 9h.01" />
@@ -143,7 +143,7 @@ export default function MyTickets() {
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${priorityColors[selectedTicket.priority]}`}>
                       {selectedTicket.priority}
                     </span>
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-lg">{selectedTicket.category}</span>
+                    <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-lg">{selectedTicket.category}</span>
                   </div>
                   <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{selectedTicket.subject}</h2>
                   {selectedTicket.bookId && (
@@ -160,13 +160,13 @@ export default function MyTickets() {
                       <div className={`max-w-[80%] p-4 rounded-2xl ${
                         msg.sender === 'author'
                           ? 'bg-gold-600 text-white rounded-br-md'
-                          : 'bg-gray-100 text-gray-900 rounded-bl-md'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-bl-md'
                       }`}>
-                        <p className={`text-xs font-medium mb-1.5 ${msg.sender === 'author' ? 'text-gold-200' : 'text-gray-500'}`}>
+                        <p className={`text-xs font-medium mb-1.5 ${msg.sender === 'author' ? 'text-gold-200' : 'text-gray-500 dark:text-gray-400'}`}>
                           {msg.sender === 'author' ? 'You' : 'BookLeaf Support'}
                         </p>
                         <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
-                        <p className={`text-xs mt-1.5 ${msg.sender === 'author' ? 'text-gold-300' : 'text-gray-400'}`}>
+                        <p className={`text-xs mt-1.5 ${msg.sender === 'author' ? 'text-gold-300' : 'text-gray-400 dark:text-gray-500'}`}>
                           {new Date(msg.timestamp).toLocaleString()}
                         </p>
                       </div>

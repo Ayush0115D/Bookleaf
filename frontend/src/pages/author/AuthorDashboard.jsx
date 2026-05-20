@@ -67,10 +67,10 @@ export default function AuthorDashboard() {
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
           Welcome back, {user?.name?.split(' ')[0]}
         </h1>
-        <p className="text-gray-400 mt-1">Here's what you can do on the BookLeaf Portal</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Here's what you can do on the BookLeaf Portal</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -80,16 +80,16 @@ export default function AuthorDashboard() {
             <Link
               key={card.to}
               to={card.to}
-              className="group relative bg-navy-800 rounded-2xl shadow-sm border border-navy-700 hover:shadow-xl hover:border-gold-500/30 transition-all duration-300 overflow-hidden"
+              className="group relative bg-white dark:bg-navy-800 rounded-2xl shadow-sm border border-gray-100 dark:border-navy-700 hover:shadow-xl hover:border-gold-500/30 transition-all duration-300 overflow-hidden"
             >
               <div className="p-6 sm:p-8">
                 <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl ${card.lightBg} ${card.lightText} mb-5 group-hover:scale-110 transition-transform duration-300`}>
                   <Icon />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-100 mb-2 group-hover:text-gold-400 transition-colors duration-200">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-gold-400 transition-colors duration-200">
                   {card.title}
                 </h3>
-                <p className="text-sm text-gray-400 leading-relaxed">
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   {card.description}
                 </p>
               </div>

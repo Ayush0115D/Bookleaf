@@ -1,6 +1,6 @@
 export default function LoadingSpinner({ fullScreen = true }) {
   return (
-    <div className={`${fullScreen ? 'flex items-center justify-center min-h-screen' : 'flex items-center justify-center py-20'} bg-surface-dark transition-colors duration-200`}>
+    <div className={`${fullScreen ? 'flex items-center justify-center min-h-screen' : 'flex items-center justify-center py-20'} bg-surface dark:bg-surface-dark transition-colors duration-200`}>
       <div className="flex flex-col items-center gap-4">
         <div className="relative">
           <div className="w-10 h-10 rounded-full border-2 border-navy-600"></div>

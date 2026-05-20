@@ -5,18 +5,58 @@ import socket from '../../services/socket';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 const statusColors = {
-  Open: 'bg-yellow-100 text-yellow-800',
-  'In Progress': 'bg-blue-100 text-blue-800',
-  Resolved: 'bg-green-100 text-green-800',
-  Closed: 'bg-gray-100 text-gray-800',
+  Open: 'bg-amber-50 text-amber-700 border-amber-200',
+  'In Progress': 'bg-blue-50 text-blue-700 border-blue-200',
+  Resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  Closed: 'bg-gray-50 text-gray-700 border-gray-200',
 };
 
 const priorityColors = {
-  Critical: 'bg-red-100 text-red-800',
-  High: 'bg-orange-100 text-orange-800',
-  Medium: 'bg-blue-100 text-blue-800',
-  Low: 'bg-gray-100 text-gray-800',
+  Critical: 'bg-red-50 text-red-700 border-red-200',
+  High: 'bg-orange-50 text-orange-700 border-orange-200',
+  Medium: 'bg-blue-50 text-blue-700 border-blue-200',
+  Low: 'bg-gray-50 text-gray-700 border-gray-200',
 };
+
+const categories = [
+  'Royalty & Payments',
+  'ISBN & Metadata Issues',
+  'Printing & Quality',
+  'Distribution & Availability',
+  'Book Status & Production Updates',
+  'General Inquiry',
+];
+
+const priorities = ['Critical', 'High', 'Medium', 'Low'];
+const statuses = ['Open', 'In Progress', 'Resolved', 'Closed'];
+
+function SearchIcon() {
+  return (
+    <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
+function FilterIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+    </svg>
+  );
+}
+
+function TicketIcon() {
+  return (
+    <svg className="w-12 h-12 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+      <path d="M9 9h.01" />
+      <path d="M15 9h.01" />
+      <path d="M9 13a3 3 0 0 0 6 0" />
+    </svg>
+  );
+}
 
 export default function TicketQueue() {
   const [tickets, setTickets] = useState([]);
@@ -67,141 +107,166 @@ export default function TicketQueue() {
     fetchTickets();
   };
 
+  const clearFilters = () => {
+    setFilters({ status: '', category: '', priority: '' });
+    setSearch('');
+  };
+
   if (loading) return <LoadingSpinner />;
+
+  const statCards = stats ? [
+    { label: 'Total', value: stats.total, color: 'text-gray-900' },
+    { label: 'Open', value: stats.open, color: 'text-amber-600' },
+    { label: 'In Progress', value: stats.inProgress, color: 'text-blue-600' },
+    { label: 'Resolved', value: stats.resolved, color: 'text-emerald-600' },
+    { label: 'Closed', value: stats.closed, color: 'text-gray-600' },
+  ] : [];
+
+  const hasActiveFilters = filters.status || filters.category || filters.priority || search;
 
   return (
     <div className="max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Ticket Queue</h1>
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Ticket Queue</h1>
+        <p className="text-gray-500 mt-1">Manage and respond to author support tickets</p>
+      </div>
 
       {stats && (
-        <div className="grid grid-cols-5 gap-4 mb-6">
-          <div className="bg-white p-3 rounded-lg shadow text-center">
-            <p className="text-xs text-gray-500">Total</p>
-            <p className="text-xl font-bold">{stats.total}</p>
-          </div>
-          <div className="bg-white p-3 rounded-lg shadow text-center">
-            <p className="text-xs text-yellow-600 font-medium">Open</p>
-            <p className="text-xl font-bold text-yellow-600">{stats.open}</p>
-          </div>
-          <div className="bg-white p-3 rounded-lg shadow text-center">
-            <p className="text-xs text-blue-600 font-medium">In Progress</p>
-            <p className="text-xl font-bold text-blue-600">{stats.inProgress}</p>
-          </div>
-          <div className="bg-white p-3 rounded-lg shadow text-center">
-            <p className="text-xs text-green-600 font-medium">Resolved</p>
-            <p className="text-xl font-bold text-green-600">{stats.resolved}</p>
-          </div>
-          <div className="bg-white p-3 rounded-lg shadow text-center">
-            <p className="text-xs text-gray-600 font-medium">Closed</p>
-            <p className="text-xl font-bold text-gray-600">{stats.closed}</p>
-          </div>
+        <div className="grid grid-cols-5 gap-3 sm:gap-4 mb-8">
+          {statCards.map((stat) => (
+            <div key={stat.label} className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 text-center shadow-sm">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{stat.label}</p>
+              <p className={`text-xl sm:text-2xl font-bold mt-1 ${stat.color}`}>{stat.value}</p>
+            </div>
+          ))}
         </div>
       )}
 
-      <div className="bg-white p-4 rounded-lg shadow mb-6">
-        <div className="flex flex-wrap gap-4 items-end">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
-            <select
-              value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              className="px-3 py-2 border rounded-lg text-sm"
-            >
-              <option value="">All Statuses</option>
-              <option value="Open">Open</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Resolved">Resolved</option>
-              <option value="Closed">Closed</option>
-            </select>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 mb-6">
+        <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+            <FilterIcon />
+            Filters
           </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
-            <select
-              value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-              className="px-3 py-2 border rounded-lg text-sm"
-            >
-              <option value="">All Categories</option>
-              <option value="Royalty & Payments">Royalty & Payments</option>
-              <option value="ISBN & Metadata Issues">ISBN & Metadata</option>
-              <option value="Printing & Quality">Printing & Quality</option>
-              <option value="Distribution & Availability">Distribution</option>
-              <option value="Book Status & Production Updates">Production Updates</option>
-              <option value="General Inquiry">General</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Priority</label>
-            <select
-              value={filters.priority} onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
-              className="px-3 py-2 border rounded-lg text-sm"
-            >
-              <option value="">All Priorities</option>
-              <option value="Critical">Critical</option>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
-            </select>
-          </div>
-          <form onSubmit={handleSearch} className="flex gap-2">
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Search</label>
+
+          <select
+            value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+            className="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+          >
+            <option value="">All Statuses</option>
+            {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+
+          <select
+            value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+            className="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+          >
+            <option value="">All Categories</option>
+            {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+
+          <select
+            value={filters.priority} onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
+            className="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+          >
+            <option value="">All Priorities</option>
+            {priorities.map((p) => <option key={p} value={p}>{p}</option>)}
+          </select>
+
+          <form onSubmit={handleSearch} className="flex gap-2 flex-1 min-w-[200px]">
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <SearchIcon />
+              </div>
               <input
                 type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search tickets..."
-                className="px-3 py-2 border rounded-lg text-sm w-48"
+                placeholder="Search by subject or author..."
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-200"
               />
             </div>
-            <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700 mt-5">
+            <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-sm shadow-indigo-200">
               Search
             </button>
           </form>
+
+          {hasActiveFilters && (
+            <button onClick={clearFilters} className="text-sm text-gray-500 hover:text-gray-700 underline transition-colors">
+              Clear filters
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Subject</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Author</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Category</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Status</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Priority</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Date</th>
-              <th className="px-4 py-3"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {tickets.map((ticket) => (
-              <tr key={ticket._id} className="hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/admin/tickets/${ticket._id}`)}>
-                <td className="px-4 py-3">
-                  <p className="font-medium text-sm">{ticket.subject}</p>
-                  {ticket.bookId && <p className="text-xs text-gray-400">{ticket.bookId.title}</p>}
-                </td>
-                <td className="px-4 py-3 text-sm">{ticket.authorId?.name}</td>
-                <td className="px-4 py-3 text-sm">{ticket.category}</td>
-                <td className="px-4 py-3">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusColors[ticket.status]}`}>
-                    {ticket.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${priorityColors[ticket.priority]}`}>
-                    {ticket.priority}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-500">
-                  {new Date(ticket.createdAt).toLocaleDateString()}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <span className="text-indigo-600 text-sm hover:underline">View →</span>
-                </td>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Subject</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Author</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Category</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Priority</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Date</th>
+                <th className="px-4 sm:px-6 py-4"></th>
               </tr>
-            ))}
-            {tickets.length === 0 && (
-              <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">No tickets found.</td></tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {tickets.map((ticket) => (
+                <tr
+                  key={ticket._id}
+                  className="hover:bg-indigo-50/40 cursor-pointer transition-colors duration-150"
+                  onClick={() => navigate(`/admin/tickets/${ticket._id}`)}
+                >
+                  <td className="px-4 sm:px-6 py-4">
+                    <p className="font-medium text-gray-900 text-sm">{ticket.subject}</p>
+                    {ticket.bookId && <p className="text-xs text-gray-400 mt-0.5">{ticket.bookId.title}</p>}
+                  </td>
+                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-600">{ticket.authorId?.name}</td>
+                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-600 hidden md:table-cell">{ticket.category}</td>
+                  <td className="px-4 sm:px-6 py-4">
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${statusColors[ticket.status] || 'bg-gray-50 text-gray-700 border-gray-200'}`}>
+                      {ticket.status}
+                    </span>
+                  </td>
+                  <td className="px-4 sm:px-6 py-4">
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${priorityColors[ticket.priority] || 'bg-gray-50 text-gray-700 border-gray-200'}`}>
+                      {ticket.priority}
+                    </span>
+                  </td>
+                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-500 hidden md:table-cell">
+                    {new Date(ticket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </td>
+                  <td className="px-4 sm:px-6 py-4 text-right">
+                    <span className="inline-flex items-center gap-1 text-indigo-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                      View
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {tickets.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <TicketIcon />
+                      <div>
+                        <p className="text-gray-500 text-sm font-medium">No tickets found</p>
+                        {hasActiveFilters && (
+                          <button onClick={clearFilters} className="text-indigo-600 text-sm hover:underline mt-1">
+                            Try clearing your filters
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

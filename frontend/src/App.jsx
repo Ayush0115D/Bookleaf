@@ -30,9 +30,9 @@ function AppLayout() {
   const dashboardPath = user.role === 'admin' ? '/admin' : '/author';
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-surface">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in">
         <Routes>
           <Route path="/" element={<Navigate to={dashboardPath} replace />} />
           <Route path="/login" element={<Navigate to={dashboardPath} replace />} />

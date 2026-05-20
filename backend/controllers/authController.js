@@ -51,12 +51,12 @@ exports.login = async (req, res, next) => {
 
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'No account found with this email. Please sign up first.' });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'Incorrect password. Please try again.' });
     }
 
     const token = generateToken(user);
@@ -88,6 +88,15 @@ exports.getAuthors = async (req, res, next) => {
   try {
     const authors = await User.find({ role: 'author' }).select('-password');
     res.json({ authors });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAdmins = async (req, res, next) => {
+  try {
+    const admins = await User.find({ role: 'admin' }).select('-password');
+    res.json({ admins });
   } catch (error) {
     next(error);
   }

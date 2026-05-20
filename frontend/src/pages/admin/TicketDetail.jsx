@@ -41,12 +41,17 @@ export default function TicketDetail() {
   const [sending, setSending] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState('');
+  const [admins, setAdmins] = useState([]);
 
   useEffect(() => {
     api.get(`/admin/tickets/${id}`)
       .then((res) => setTicket(res.data.ticket))
       .catch(console.error)
       .finally(() => setLoading(false));
+
+    api.get('/auth/admins')
+      .then((res) => setAdmins(res.data.admins))
+      .catch(() => {});
   }, [id]);
 
   const generateDraft = async () => {
@@ -280,6 +285,19 @@ export default function TicketDetail() {
                   className="w-full px-3 py-2 border rounded-lg text-sm"
                 >
                   {priorities.map((p) => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Assigned To</label>
+                <select
+                  value={ticket.assignedTo?._id || ''} onChange={(e) => updateField('assignedTo', e.target.value || null)}
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                >
+                  <option value="">Unassigned</option>
+                  {admins.map((admin) => (
+                    <option key={admin._id} value={admin._id}>{admin.name}</option>
+                  ))}
                 </select>
               </div>
             </div>

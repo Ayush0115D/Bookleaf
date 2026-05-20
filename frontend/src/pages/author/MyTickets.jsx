@@ -5,17 +5,17 @@ import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 const statusColors = {
-  Open: 'bg-amber-50 text-amber-700 border-amber-200',
-  'In Progress': 'bg-blue-50 text-blue-700 border-blue-200',
-  Resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  Closed: 'bg-gray-50 text-gray-700 border-gray-200',
+  Open: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+  'In Progress': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  Resolved: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  Closed: 'bg-gray-500/10 text-gray-400 border-gray-500/20',
 };
 
 const priorityColors = {
-  Critical: 'bg-red-50 text-red-700 border-red-200',
-  High: 'bg-orange-50 text-orange-700 border-orange-200',
-  Medium: 'bg-blue-50 text-blue-700 border-blue-200',
-  Low: 'bg-gray-50 text-gray-700 border-gray-200',
+  Critical: 'bg-red-500/10 text-red-400 border-red-500/20',
+  High: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+  Medium: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  Low: 'bg-gray-500/10 text-gray-400 border-gray-500/20',
 };
 
 function MessageIcon() {
@@ -82,17 +82,17 @@ export default function MyTickets() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Tickets</h1>
-        <p className="text-gray-500 mt-1">Track your support queries and responses from the team</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">My Tickets</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Track your support queries and responses from the team</p>
       </div>
 
       {tickets.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-12 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
             <TicketIcon />
           </div>
-          <p className="text-lg font-medium text-gray-700 mb-1">No support tickets yet</p>
-          <p className="text-sm text-gray-500">Submit a ticket if you have any questions or issues.</p>
+          <p className="text-lg font-medium text-gray-700 dark:text-gray-200 mb-1">No support tickets yet</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Submit a ticket if you have any questions or issues.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -101,10 +101,10 @@ export default function MyTickets() {
               <div
                 key={ticket._id}
                 onClick={() => openTicket(ticket._id)}
-                className={`bg-white p-4 rounded-xl border cursor-pointer hover:shadow-md transition-all duration-200 ${
+                className={`bg-white dark:bg-gray-800 p-4 rounded-xl border cursor-pointer hover:shadow-md transition-all duration-200 ${
                   selectedTicket?._id === ticket._id
-                    ? 'border-indigo-400 ring-2 ring-indigo-100 shadow-sm'
-                    : 'border-gray-100'
+                    ? 'border-gold-400 ring-2 ring-gold-100 dark:ring-gold-900/50 shadow-sm'
+                    : 'border-gray-100 dark:border-gray-700'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2.5">
@@ -115,15 +115,15 @@ export default function MyTickets() {
                     {ticket.priority}
                   </span>
                 </div>
-                <h3 className="font-medium text-sm text-gray-900 truncate">{ticket.subject}</h3>
-                <p className="text-xs text-gray-400 mt-1.5">
+                <h3 className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">{ticket.subject}</h3>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">
                   {new Date(ticket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} · {ticket.category}
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   {ticket.bookId && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">{ticket.bookId.title}</span>
+                    <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md">{ticket.bookId.title}</span>
                   )}
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <span className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
                     <MessageIcon />
                     {ticket.messages.length}
                   </span>
@@ -134,8 +134,8 @@ export default function MyTickets() {
 
           <div className="lg:col-span-2">
             {selectedTicket ? (
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-100">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-gray-100 dark:border-gray-700">
                   <div className="flex items-center flex-wrap gap-2 mb-3">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${statusColors[selectedTicket.status]}`}>
                       {selectedTicket.status}
@@ -145,11 +145,11 @@ export default function MyTickets() {
                     </span>
                     <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-lg">{selectedTicket.category}</span>
                   </div>
-                  <h2 className="text-lg font-bold text-gray-900">{selectedTicket.subject}</h2>
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{selectedTicket.subject}</h2>
                   {selectedTicket.bookId && (
-                    <p className="text-sm text-gray-500 mt-1">Book: {selectedTicket.bookId.title}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Book: {selectedTicket.bookId.title}</p>
                   )}
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
                     Created {new Date(selectedTicket.createdAt).toLocaleString()}
                   </p>
                 </div>
@@ -159,14 +159,14 @@ export default function MyTickets() {
                     <div key={i} className={`flex ${msg.sender === 'author' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
                       <div className={`max-w-[80%] p-4 rounded-2xl ${
                         msg.sender === 'author'
-                          ? 'bg-indigo-600 text-white rounded-br-md'
+                          ? 'bg-gold-600 text-white rounded-br-md'
                           : 'bg-gray-100 text-gray-900 rounded-bl-md'
                       }`}>
-                        <p className={`text-xs font-medium mb-1.5 ${msg.sender === 'author' ? 'text-indigo-200' : 'text-gray-500'}`}>
+                        <p className={`text-xs font-medium mb-1.5 ${msg.sender === 'author' ? 'text-gold-200' : 'text-gray-500'}`}>
                           {msg.sender === 'author' ? 'You' : 'BookLeaf Support'}
                         </p>
                         <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
-                        <p className={`text-xs mt-1.5 ${msg.sender === 'author' ? 'text-indigo-300' : 'text-gray-400'}`}>
+                        <p className={`text-xs mt-1.5 ${msg.sender === 'author' ? 'text-gold-300' : 'text-gray-400'}`}>
                           {new Date(msg.timestamp).toLocaleString()}
                         </p>
                       </div>
@@ -175,10 +175,10 @@ export default function MyTickets() {
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center h-full flex items-center justify-center">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-12 text-center h-full flex items-center justify-center">
                 <div>
                   <MessageIcon />
-                  <p className="text-gray-500 text-sm mt-2">Select a ticket to view the conversation</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">Select a ticket to view the conversation</p>
                 </div>
               </div>
             )}

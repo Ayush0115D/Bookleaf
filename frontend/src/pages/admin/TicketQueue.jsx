@@ -127,31 +127,31 @@ export default function TicketQueue() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Ticket Queue</h1>
-        <p className="text-gray-500 mt-1">Manage and respond to author support tickets</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Ticket Queue</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage and respond to author support tickets</p>
       </div>
 
       {stats && (
         <div className="grid grid-cols-5 gap-3 sm:gap-4 mb-8">
           {statCards.map((stat) => (
-            <div key={stat.label} className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 text-center shadow-sm">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{stat.label}</p>
+            <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 text-center shadow-sm">
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{stat.label}</p>
               <p className={`text-xl sm:text-2xl font-bold mt-1 ${stat.color}`}>{stat.value}</p>
             </div>
           ))}
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 sm:p-6 mb-6">
         <div className="flex flex-wrap gap-4 items-center">
-          <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <FilterIcon />
             Filters
           </div>
 
           <select
             value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
             <option value="">All Statuses</option>
             {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -159,7 +159,7 @@ export default function TicketQueue() {
 
           <select
             value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-            className="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
             <option value="">All Categories</option>
             {categories.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -167,7 +167,7 @@ export default function TicketQueue() {
 
           <select
             value={filters.priority} onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
-            className="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
             <option value="">All Priorities</option>
             {priorities.map((p) => <option key={p} value={p}>{p}</option>)}
@@ -181,49 +181,49 @@ export default function TicketQueue() {
               <input
                 type="text" value={search} onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by subject or author..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-200"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-shadow duration-200"
               />
             </div>
-            <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-sm shadow-indigo-200">
+            <button type="submit" className="bg-gold-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-gold-700 transition-colors duration-200 shadow-sm shadow-gold-200">
               Search
             </button>
           </form>
 
           {hasActiveFilters && (
-            <button onClick={clearFilters} className="text-sm text-gray-500 hover:text-gray-700 underline transition-colors">
+            <button onClick={clearFilters} className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline transition-colors">
               Clear filters
             </button>
           )}
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100">
-                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Subject</th>
-                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Author</th>
-                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Category</th>
-                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Priority</th>
-                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Date</th>
+              <tr className="border-b border-gray-100 dark:border-gray-700">
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Subject</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Author</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell">Category</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell">Date</th>
                 <th className="px-4 sm:px-6 py-4"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
               {tickets.map((ticket) => (
                 <tr
                   key={ticket._id}
-                  className="hover:bg-indigo-50/40 cursor-pointer transition-colors duration-150"
+                  className="hover:bg-gold-50/40 dark:hover:bg-gold-900/20 cursor-pointer transition-colors duration-150"
                   onClick={() => navigate(`/admin/tickets/${ticket._id}`)}
                 >
                   <td className="px-4 sm:px-6 py-4">
-                    <p className="font-medium text-gray-900 text-sm">{ticket.subject}</p>
-                    {ticket.bookId && <p className="text-xs text-gray-400 mt-0.5">{ticket.bookId.title}</p>}
+                    <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">{ticket.subject}</p>
+                    {ticket.bookId && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{ticket.bookId.title}</p>}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-600">{ticket.authorId?.name}</td>
-                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-600 hidden md:table-cell">{ticket.category}</td>
+                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{ticket.authorId?.name}</td>
+                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-600 dark:text-gray-300 hidden md:table-cell">{ticket.category}</td>
                   <td className="px-4 sm:px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${statusColors[ticket.status] || 'bg-gray-50 text-gray-700 border-gray-200'}`}>
                       {ticket.status}
@@ -234,11 +234,11 @@ export default function TicketQueue() {
                       {ticket.priority}
                     </span>
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-500 hidden md:table-cell">
+                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">
                     {new Date(ticket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right">
-                    <span className="inline-flex items-center gap-1 text-indigo-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="inline-flex items-center gap-1 text-gold-600 dark:text-gold-400 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                       View
                       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="9 18 15 12 9 6" />
@@ -255,7 +255,7 @@ export default function TicketQueue() {
                       <div>
                         <p className="text-gray-500 text-sm font-medium">No tickets found</p>
                         {hasActiveFilters && (
-                          <button onClick={clearFilters} className="text-indigo-600 text-sm hover:underline mt-1">
+                          <button onClick={clearFilters} className="text-gold-600 text-sm hover:underline mt-1">
                             Try clearing your filters
                           </button>
                         )}

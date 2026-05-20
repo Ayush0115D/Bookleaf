@@ -179,14 +179,14 @@ export default function TicketDetail() {
   if (!ticket) return (
     <div className="text-center py-20">
       <p className="text-gray-500 text-lg">Ticket not found</p>
-      <button onClick={() => navigate('/admin/tickets')} className="mt-4 text-indigo-600 text-sm hover:underline">Back to Queue</button>
+      <button onClick={() => navigate('/admin/tickets')} className="mt-4 text-gold-600 text-sm hover:underline">Back to Queue</button>
     </div>
   );
 
   return (
     <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <button onClick={() => navigate('/admin/tickets')} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 transition-colors duration-200">
+        <button onClick={() => navigate('/admin/tickets')} className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gold-600 dark:hover:text-gold-400 transition-colors duration-200">
           <ArrowLeftIcon />
           Back to Queue
         </button>
@@ -194,7 +194,7 @@ export default function TicketDetail() {
 
       {message && (
         <div className={`px-4 py-3 rounded-xl text-sm mb-6 flex items-center gap-2 animate-slide-up ${
-          messageType === 'success' ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'
+          messageType === 'success' ? 'bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
         }`}>
           {messageType === 'success' ? (
             <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -213,7 +213,7 @@ export default function TicketDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
             <div className="flex items-center flex-wrap gap-2 mb-4">
               <span className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium border ${statusColors[ticket.status]}`}>
                 {ticket.status}
@@ -221,41 +221,41 @@ export default function TicketDetail() {
               <span className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium border ${priorityColors[ticket.priority]}`}>
                 {ticket.priority}
               </span>
-              <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded-lg">{ticket.category}</span>
+              <span className="text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-lg">{ticket.category}</span>
               {ticket.aiClassified && (
-                <span className="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-lg flex items-center gap-1">
+                <span className="text-xs bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800 px-2 py-0.5 rounded-lg flex items-center gap-1">
                   <SparklesIcon />
                   AI Classified
                 </span>
               )}
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-3">{ticket.subject}</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">{ticket.subject}</h2>
             {ticket.bookId && (
-              <p className="text-sm text-gray-500 mb-3 flex items-center gap-1.5">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-1.5">
                 <FileTextIcon />
-                Book: <span className="font-medium text-gray-700">{ticket.bookId.title}</span>
-                <span className="text-gray-300">|</span>
+                Book: <span className="font-medium text-gray-700 dark:text-gray-200">{ticket.bookId.title}</span>
+                <span className="text-gray-300 dark:text-gray-600">|</span>
                 <span className="font-mono text-xs">ISBN: {ticket.bookId.isbn}</span>
               </p>
             )}
-            <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-4">
+            <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 mb-4">
               <UserIcon />
               {ticket.authorId?.name} ({ticket.authorId?.email})
-              {ticket.assignedTo && <><span className="text-gray-300">·</span> Assigned to: <span className="font-medium text-gray-700">{ticket.assignedTo.name}</span></>}
+              {ticket.assignedTo && <><span className="text-gray-300 dark:text-gray-600">·</span> Assigned to: <span className="font-medium text-gray-700 dark:text-gray-200">{ticket.assignedTo.name}</span></>}
             </div>
-            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Original Description</p>
-              <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{ticket.description}</p>
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+              <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Original Description</p>
+              <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">{ticket.description}</p>
             </div>
-            <p className="text-xs text-gray-400 mt-3 flex items-center gap-3">
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 flex items-center gap-3">
               <span>Created: {new Date(ticket.createdAt).toLocaleString()}</span>
               <span>Updated: {new Date(ticket.updatedAt).toLocaleString()}</span>
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
               Conversation
@@ -264,9 +264,9 @@ export default function TicketDetail() {
               {ticket.messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.sender === 'author' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
                   <div className={`max-w-[80%] p-4 rounded-2xl ${
-                    msg.sender === 'author' ? 'bg-indigo-600 text-white rounded-br-md' : 'bg-gray-100 text-gray-900 rounded-bl-md'
+                    msg.sender === 'author' ? 'bg-gold-600 text-white rounded-br-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-bl-md'
                   }`}>
-                    <p className={`text-xs font-medium mb-1.5 ${msg.sender === 'author' ? 'text-indigo-200' : 'text-gray-500'}`}>
+                    <p className={`text-xs font-medium mb-1.5 ${msg.sender === 'author' ? 'text-gold-200' : 'text-gray-500 dark:text-gray-400'}`}>
                       {msg.sender === 'author' ? ticket.authorId?.name : 'BookLeaf Admin'} — {new Date(msg.timestamp).toLocaleString()}
                     </p>
                     <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
@@ -274,13 +274,13 @@ export default function TicketDetail() {
                 </div>
               ))}
               {ticket.messages.length === 0 && (
-                <p className="text-center text-gray-400 text-sm py-8">No messages yet. Be the first to respond.</p>
+                <p className="text-center text-gray-400 dark:text-gray-500 text-sm py-8">No messages yet. Be the first to respond.</p>
               )}
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Respond to Author</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Respond to Author</h3>
             <div className="mb-4 flex items-center gap-3">
               <button
                 onClick={generateDraft} disabled={generating}
@@ -303,31 +303,31 @@ export default function TicketDetail() {
               </button>
             </div>
             {draft && (
-              <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-4 animate-slide-up">
+              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4 mb-4 animate-slide-up">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-semibold text-purple-700 uppercase tracking-wider flex items-center gap-1">
+                  <p className="text-xs font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-wider flex items-center gap-1">
                     <SparklesIcon />
                     AI Draft Response
                   </p>
                   <button
                     onClick={() => setResponse(draft)}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+                    className="text-xs text-gold-600 hover:text-gold-800 font-medium transition-colors"
                   >
                     Use this draft →
                   </button>
                 </div>
-                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{draft}</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{draft}</p>
               </div>
             )}
             <textarea
               value={response} onChange={(e) => setResponse(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-200" rows="4"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-shadow duration-200" rows="4"
               placeholder="Type your response..."
             />
             <div className="flex justify-end mt-3">
               <button
                 onClick={sendResponse} disabled={sending || !response.trim()}
-                className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm shadow-indigo-200"
+                className="inline-flex items-center gap-2 bg-gold-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gold-700 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm shadow-gold-200"
               >
                 {sending ? (
                   <>
@@ -349,14 +349,14 @@ export default function TicketDetail() {
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <BotIcon />
                 AI Assistant
               </h3>
               {ticket.aiClassified && (
-                <span className="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-lg flex items-center gap-1">
+                <span className="text-xs bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800 px-2 py-0.5 rounded-lg flex items-center gap-1">
                   <SparklesIcon />
                   Powered
                 </span>
@@ -364,18 +364,18 @@ export default function TicketDetail() {
             </div>
 
             <div className="space-y-4 text-sm">
-              <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                <span className="text-gray-500">Classification</span>
-                <span className="font-medium text-gray-900">{ticket.category}</span>
+              <div className="flex items-center justify-between py-2 border-b border-gray-50 dark:border-gray-700">
+                <span className="text-gray-500 dark:text-gray-400">Classification</span>
+                <span className="font-medium text-gray-900 dark:text-gray-100">{ticket.category}</span>
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                <span className="text-gray-500">Priority Score</span>
-                <span className={`font-medium ${ticket.priority === 'Critical' ? 'text-red-600' : ticket.priority === 'High' ? 'text-orange-600' : 'text-gray-900'}`}>
+              <div className="flex items-center justify-between py-2 border-b border-gray-50 dark:border-gray-700">
+                <span className="text-gray-500 dark:text-gray-400">Priority Score</span>
+                <span className={`font-medium ${ticket.priority === 'Critical' ? 'text-red-600' : ticket.priority === 'High' ? 'text-orange-600' : 'text-gray-900 dark:text-gray-100'}`}>
                   {ticket.priority}
                 </span>
               </div>
               {ticket.aiClassified && (
-                <p className="text-xs text-gray-400 italic">
+                <p className="text-xs text-gray-400 dark:text-gray-500 italic">
                   AI auto-classified on creation. Use the dropdowns below to override.
                 </p>
               )}
@@ -398,45 +398,45 @@ export default function TicketDetail() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Ticket Management</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Ticket Management</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Status</label>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Status</label>
                 <select
                   value={ticket.status} onChange={(e) => updateField('status', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white"
                 >
                   {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Category</label>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Category</label>
                 <select
                   value={ticket.category} onChange={(e) => updateField('category', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white"
                 >
                   {categories.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Priority</label>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Priority</label>
                 <select
                   value={ticket.priority} onChange={(e) => updateField('priority', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white"
                 >
                   {priorities.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Assigned To</label>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Assigned To</label>
                 <select
                   value={ticket.assignedTo?._id || ''} onChange={(e) => updateField('assignedTo', e.target.value || null)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                  className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">Unassigned</option>
                   {admins.map((admin) => (
@@ -447,7 +447,7 @@ export default function TicketDetail() {
             </div>
 
             {updating && (
-              <div className="flex items-center gap-2 mt-4 text-xs text-gray-400">
+              <div className="flex items-center gap-2 mt-4 text-xs text-gray-400 dark:text-gray-500">
                 <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -457,27 +457,27 @@ export default function TicketDetail() {
             )}
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Internal Notes</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Internal Notes</h3>
             <div className="space-y-3 mb-4 max-h-40 overflow-y-auto">
               {ticket.internalNotes?.length === 0 && (
-                <p className="text-sm text-gray-400 text-center py-4">No internal notes</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">No internal notes</p>
               )}
               {ticket.internalNotes?.map((note, i) => (
-                <div key={i} className="bg-amber-50 border border-amber-100 p-3 rounded-xl text-sm animate-fade-in">
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
-                    <span className="w-5 h-5 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center text-[10px] font-bold">
+                <div key={i} className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 p-3 rounded-xl text-sm animate-fade-in">
+                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    <span className="w-5 h-5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 flex items-center justify-center text-[10px] font-bold">
                       {note.adminId?.name?.charAt(0) || 'A'}
                     </span>
                     {note.adminId?.name || 'Admin'} — {new Date(note.timestamp).toLocaleString()}
                   </div>
-                  <p className="text-gray-700">{note.text}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{note.text}</p>
                 </div>
               ))}
             </div>
             <textarea
               value={internalNote} onChange={(e) => setInternalNote(e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow duration-200" rows="2"
+              className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gold-500 transition-shadow duration-200" rows="2"
               placeholder="Add an internal note..."
             />
             <button
@@ -488,29 +488,29 @@ export default function TicketDetail() {
             </button>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <UserIcon />
               Author Details
             </h3>
             <div className="text-sm space-y-2">
-              <div className="flex items-center gap-3 py-2 border-b border-gray-50">
-                <span className="text-gray-500 w-16 shrink-0">Name</span>
-                <span className="font-medium text-gray-900">{ticket.authorId?.name}</span>
+              <div className="flex items-center gap-3 py-2 border-b border-gray-50 dark:border-gray-700">
+                <span className="text-gray-500 dark:text-gray-400 w-16 shrink-0">Name</span>
+                <span className="font-medium text-gray-900 dark:text-gray-100">{ticket.authorId?.name}</span>
               </div>
-              <div className="flex items-center gap-3 py-2 border-b border-gray-50">
-                <span className="text-gray-500 w-16 shrink-0">Email</span>
-                <span className="text-gray-700">{ticket.authorId?.email}</span>
+              <div className="flex items-center gap-3 py-2 border-b border-gray-50 dark:border-gray-700">
+                <span className="text-gray-500 dark:text-gray-400 w-16 shrink-0">Email</span>
+                <span className="text-gray-700 dark:text-gray-300">{ticket.authorId?.email}</span>
               </div>
               {ticket.authorId?.bankDetails && (
                 <>
-                  <div className="flex items-center gap-3 py-2 border-b border-gray-50">
-                    <span className="text-gray-500 w-16 shrink-0">Account</span>
-                    <span className="text-gray-700">{ticket.authorId.bankDetails.accountHolder}</span>
+                  <div className="flex items-center gap-3 py-2 border-b border-gray-50 dark:border-gray-700">
+                    <span className="text-gray-500 dark:text-gray-400 w-16 shrink-0">Account</span>
+                    <span className="text-gray-700 dark:text-gray-300">{ticket.authorId.bankDetails.accountHolder}</span>
                   </div>
                   <div className="flex items-center gap-3 py-2">
-                    <span className="text-gray-500 w-16 shrink-0">Bank</span>
-                    <span className="text-gray-700">{ticket.authorId.bankDetails.bankName}</span>
+                    <span className="text-gray-500 dark:text-gray-400 w-16 shrink-0">Bank</span>
+                    <span className="text-gray-700 dark:text-gray-300">{ticket.authorId.bankDetails.bankName}</span>
                   </div>
                 </>
               )}

@@ -2,29 +2,41 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-function BookOpenIcon() {
+function BookLeafLogo() {
   return (
-    <svg className="w-10 h-10 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    <svg className="w-7 h-7" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="currentColor" className="text-gold-500/15" />
+      <path d="M8 12c0-1.1.9-2 2-2h3a4 4 0 0 1 3 1.4A4 4 0 0 1 19 10h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-3a4 4 0 0 0-4 0 4 4 0 0 0-4 0H10a2 2 0 0 1-2-2v-9z" fill="currentColor" className="text-gold-500/20" />
+      <path d="M16 12v11" stroke="url(#goldGrad)" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M11 13h4" stroke="url(#goldGrad)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M11 16h4" stroke="url(#goldGrad)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M11 19h4" stroke="url(#goldGrad)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M17 13h4" stroke="url(#goldGrad)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M17 16h4" stroke="url(#goldGrad)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M17 19h4" stroke="url(#goldGrad)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M22 8l-1.5 1.5M22 8l1.5 1.5" stroke="currentColor" className="text-gold-400" strokeWidth="1.2" strokeLinecap="round" />
+      <defs>
+        <linearGradient id="goldGrad" x1="0" y1="0" x2="32" y2="32">
+          <stop offset="0%" stopColor="#fbbf24" />
+          <stop offset="100%" stopColor="#d97706" />
+        </linearGradient>
+      </defs>
     </svg>
   );
 }
 
 function MailIcon() {
   return (
-    <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="4" width="20" height="16" rx="2" />
-      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
     </svg>
   );
 }
 
 function LockIcon() {
   return (
-    <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
   );
 }
@@ -32,8 +44,7 @@ function LockIcon() {
 function EyeIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
     </svg>
   );
 }
@@ -41,8 +52,7 @@ function EyeIcon() {
 function EyeOffIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-      <line x1="1" y1="1" x2="23" y2="23" />
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" />
     </svg>
   );
 }
@@ -71,104 +81,110 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex bg-surface">
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-indigo-400 rounded-full blur-3xl" />
+    <div className="min-h-screen flex bg-surface-dark">
+      <div className="fixed inset-0 bg-grid pointer-events-none" />
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-navy-900 via-navy-800 to-navy-900">
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gold-600/5 rounded-full blur-3xl" />
         </div>
-        <div className="relative z-10 flex flex-col justify-between p-16">
+        <div className="relative z-10 flex flex-col justify-between p-16 w-full">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-white/15">
-              <BookOpenIcon />
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gold-500/10">
+              <BookLeafLogo />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">BookLeaf</h1>
-              <p className="text-indigo-300 text-sm">Author Support Portal</p>
+              <h1 className="text-xl font-bold text-white">BookLeaf</h1>
+              <p className="text-gray-500 text-xs">Publishing Portal</p>
             </div>
           </div>
-          <div>
-            <blockquote className="text-white/80 text-lg leading-relaxed italic">
-              "A centralized platform for authors to track their books, manage royalties, and get support — all in one place."
-            </blockquote>
-            <div className="mt-6 flex items-center gap-3">
-              <div className="flex -space-x-2">
-                {['R', 'A', 'S', 'P'].map((l, i) => (
-                  <div key={i} className="w-8 h-8 rounded-full bg-indigo-500/40 border-2 border-indigo-700 flex items-center justify-center text-white text-xs font-bold">
-                    {l}
-                  </div>
-                ))}
+          <div className="max-w-md">
+            <div className="glass rounded-2xl p-8 space-y-6">
+              <div>
+                <p className="text-gold-400 text-sm font-semibold tracking-widest uppercase">Platform</p>
+                <h2 className="text-2xl font-bold text-white mt-2 leading-tight">
+                  Author Support &<br />
+                  <span className="text-gradient">Publishing Hub</span>
+                </h2>
               </div>
-              <p className="text-indigo-300 text-sm">Trusted by authors worldwide</p>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Centralized platform for authors to track books, manage royalties, and get AI-powered support from the publishing team.
+              </p>
+              <div className="flex items-center gap-4 pt-2 border-t border-gold-500/10">
+                <div className="flex -space-x-2">
+                  {['R', 'A', 'S', 'P'].map((l, i) => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-navy-600 border-2 border-navy-800 flex items-center justify-center text-gray-400 text-xs font-bold">
+                      {l}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-gray-500 text-xs">Trusted by authors</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
-        <div className="w-full max-w-md animate-slide-up">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-surface-dark">
+        <div className="w-full max-w-sm animate-slide-up">
           <div className="text-center mb-8 lg:hidden">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-100 mb-4">
-              <BookOpenIcon />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gold-500/10 mb-4">
+              <BookLeafLogo />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-            <p className="text-gray-500 mt-1">Sign in to your BookLeaf account</p>
+            <h1 className="text-xl font-bold text-white">Welcome back</h1>
+            <p className="text-gray-500 text-sm mt-1">Sign in to your account</p>
           </div>
 
-          <div className="hidden lg:block text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-            <p className="text-gray-500 mt-1">Sign in to your account to continue</p>
+          <div className="hidden lg:block mb-8">
+            <h1 className="text-xl font-bold text-white">Welcome back</h1>
+            <p className="text-gray-500 text-sm mt-1">Sign in to your account to continue</p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm mb-6 flex items-center gap-2">
-              <svg className="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
+            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-xl text-sm mb-6 flex items-center gap-2">
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email address</label>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5 tracking-wide uppercase">Email</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <MailIcon />
                 </div>
                 <input
                   type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-200"
+                  className="w-full pl-9 pr-3.5 py-2.5 bg-navy-800 border border-navy-600 rounded-xl text-sm text-gray-100 placeholder:text-gray-600 focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/20 transition-all duration-200"
                   placeholder="you@company.com" required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5 tracking-wide uppercase">Password</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <LockIcon />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-11 py-2.5 border border-gray-300 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-200"
-                  placeholder="Enter your password" required
+                  className="w-full pl-9 pr-9 py-2.5 bg-navy-800 border border-navy-600 rounded-xl text-sm text-gray-100 placeholder:text-gray-600 focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/20 transition-all duration-200"
+                  placeholder="Enter password" required
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-                  <span className="w-5 h-5 block">
-                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                  </span>
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
+                  <span className="w-4 h-4 block">{showPassword ? <EyeOffIcon /> : <EyeIcon />}</span>
                 </button>
               </div>
             </div>
 
             <button
               type="submit" disabled={loading}
-              className="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-medium text-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm shadow-indigo-200"
+              className="w-full bg-gradient-to-r from-gold-600 to-gold-500 text-navy-950 py-2.5 rounded-xl font-semibold text-sm hover:from-gold-500 hover:to-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:ring-offset-2 focus:ring-offset-surface-dark disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 glow-gold"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -184,25 +200,25 @@ export default function Login() {
 
           <p className="text-center text-sm text-gray-500 mt-6">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-indigo-600 font-medium hover:text-indigo-700 transition-colors">Create account</Link>
+            <Link to="/signup" className="text-gold-400 font-medium hover:text-gold-300 transition-colors">Create account</Link>
           </p>
 
-          <div className="mt-8 p-4 bg-gray-50 rounded-xl border border-gray-100">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Test Credentials</p>
-            <div className="space-y-1.5 text-sm">
+          <div className="mt-8 p-4 bg-navy-800/50 rounded-xl border border-navy-700">
+            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2">Test Credentials</p>
+            <div className="space-y-1.5 text-xs">
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                <span className="font-mono text-xs text-gray-600">admin@bookleaf.com</span>
-                <span className="text-gray-400">/</span>
-                <span className="font-mono text-xs text-gray-600">Admin@123</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-indigo-100 text-indigo-700">Admin</span>
+                <span className="w-1 h-1 rounded-full bg-gold-500" />
+                <span className="font-mono text-gray-400">admin@bookleaf.com</span>
+                <span className="text-gray-600">/</span>
+                <span className="font-mono text-gray-400">Admin@123</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-gold-500/10 text-gold-400">Admin</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span className="font-mono text-xs text-gray-600">ravi.sharma@email.com</span>
-                <span className="text-gray-400">/</span>
-                <span className="font-mono text-xs text-gray-600">author123</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-100 text-emerald-700">Author</span>
+                <span className="w-1 h-1 rounded-full bg-teal-500" />
+                <span className="font-mono text-gray-400">ravi.sharma@email.com</span>
+                <span className="text-gray-600">/</span>
+                <span className="font-mono text-gray-400">author123</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-teal-500/10 text-teal-400">Author</span>
               </div>
             </div>
           </div>

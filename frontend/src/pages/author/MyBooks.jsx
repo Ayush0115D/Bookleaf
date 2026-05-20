@@ -3,15 +3,15 @@ import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 const statusColors = {
-  'Published & Live': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  'Cover Design': 'bg-amber-50 text-amber-700 border-amber-200',
-  'Typesetting': 'bg-blue-50 text-blue-700 border-blue-200',
-  'Proofreading': 'bg-purple-50 text-purple-700 border-purple-200',
-  'Manuscript Received': 'bg-gray-50 text-gray-700 border-gray-200',
-  'Editing': 'bg-orange-50 text-orange-700 border-orange-200',
-  'ISBN Assignment': 'bg-teal-50 text-teal-700 border-teal-200',
-  'Printing': 'bg-pink-50 text-pink-700 border-pink-200',
-  'Distribution Setup': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  'Published & Live': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  'Cover Design': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+  'Typesetting': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  'Proofreading': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  'Manuscript Received': 'bg-gray-500/10 text-gray-400 border-gray-500/20',
+  'Editing': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+  'ISBN Assignment': 'bg-teal-500/10 text-teal-400 border-teal-500/20',
+  'Printing': 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+  'Distribution Setup': 'bg-gold-500/10 text-gold-400 border-gold-500/20',
 };
 
 function BookIcon() {
@@ -83,7 +83,7 @@ export default function MyBooks() {
   );
 
   const statCards = summary ? [
-    { label: 'Total Books', value: summary.totalBooks, icon: BookIcon, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { label: 'Total Books', value: summary.totalBooks, icon: BookIcon, color: 'text-gold-600', bg: 'bg-gold-50' },
     { label: 'Copies Sold', value: summary.totalCopiesSold, icon: TrendingUpIcon, color: 'text-blue-600', bg: 'bg-blue-50' },
     { label: 'Royalty Earned', value: `₹${summary.totalRoyaltyEarned.toLocaleString()}`, icon: DollarIcon, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     { label: 'Royalty Pending', value: `₹${summary.totalRoyaltyPending.toLocaleString()}`, icon: ClockIcon, color: 'text-amber-600', bg: 'bg-amber-50' },
@@ -92,8 +92,8 @@ export default function MyBooks() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Books</h1>
-        <p className="text-gray-500 mt-1">Track your published books, royalties, and production status</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white">My Books</h1>
+        <p className="text-gray-400 mt-1">Track your published books, royalties, and production status</p>
       </div>
 
       {summary && (
@@ -101,24 +101,24 @@ export default function MyBooks() {
           {statCards.map((stat) => {
             const Icon = stat.icon;
             return (
-              <div key={stat.label} className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+              <div key={stat.label} className="bg-navy-800 rounded-xl border border-navy-700 p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
                 <div className="flex items-center justify-between mb-3">
                   <div className={`${stat.bg} p-2.5 rounded-lg`}>
                     <Icon />
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm text-gray-500 mt-0.5">{stat.label}</p>
+                <p className="text-2xl font-bold text-gray-100">{stat.value}</p>
+                <p className="text-sm text-gray-400 mt-0.5">{stat.label}</p>
               </div>
             );
           })}
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-gray-100">
+      <div className="bg-navy-800 rounded-2xl border border-navy-700 shadow-sm overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-navy-700">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h2 className="text-lg font-semibold text-gray-900">All Books</h2>
+            <h2 className="text-lg font-semibold text-gray-100">All Books</h2>
             <div className="relative w-full sm:w-72">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <SearchIcon />
@@ -126,7 +126,7 @@ export default function MyBooks() {
               <input
                 type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by title or ISBN..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-200"
+                className="w-full pl-10 pr-4 py-2 border border-navy-600 bg-navy-700 text-gray-100 rounded-xl text-sm placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40 transition-all duration-200"
               />
             </div>
           </div>
@@ -135,35 +135,35 @@ export default function MyBooks() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100">
-                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Title</th>
-                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">ISBN</th>
-                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Genre</th>
-                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">MRP</th>
-                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Sold</th>
-                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Earned</th>
-                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Paid</th>
-                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Pending</th>
+              <tr className="border-b border-navy-700">
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Title</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider hidden sm:table-cell">ISBN</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider hidden md:table-cell">Genre</th>
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">MRP</th>
+                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider hidden sm:table-cell">Sold</th>
+                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Earned</th>
+                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">Paid</th>
+                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Pending</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-navy-700/50">
               {filteredBooks.map((book) => (
-                <tr key={book._id} className="hover:bg-gray-50/80 transition-colors duration-150">
+                <tr key={book._id} className="hover:bg-navy-700/30 transition-colors duration-150">
                   <td className="px-4 sm:px-6 py-4">
-                    <p className="font-medium text-gray-900 text-sm">{book.title}</p>
+                    <p className="font-medium text-gray-100 text-sm">{book.title}</p>
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-500 hidden sm:table-cell font-mono">{book.isbn}</td>
-                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-600 hidden md:table-cell">{book.genre}</td>
+                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-400 hidden sm:table-cell font-mono">{book.isbn}</td>
+                  <td className="px-4 sm:px-6 py-4 text-sm text-gray-300 hidden md:table-cell">{book.genre}</td>
                   <td className="px-4 sm:px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${statusColors[book.status] || 'bg-gray-50 text-gray-700 border-gray-200'}`}>
                       {book.status}
                     </span>
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right text-sm font-medium">₹{book.mrp}</td>
-                  <td className="px-4 sm:px-6 py-4 text-right text-sm text-gray-600 hidden sm:table-cell">{book.copiesSold}</td>
+                  <td className="px-4 sm:px-6 py-4 text-right text-sm text-gray-300 hidden sm:table-cell">{book.copiesSold}</td>
                   <td className="px-4 sm:px-6 py-4 text-right text-sm font-medium text-emerald-600">₹{book.royaltyEarned.toLocaleString()}</td>
-                  <td className="px-4 sm:px-6 py-4 text-right text-sm text-gray-600 hidden lg:table-cell">₹{book.royaltyPaid.toLocaleString()}</td>
+                  <td className="px-4 sm:px-6 py-4 text-right text-sm text-gray-300 hidden lg:table-cell">₹{book.royaltyPaid.toLocaleString()}</td>
                   <td className="px-4 sm:px-6 py-4 text-right">
                     {book.royaltyPending > 0 ? (
                       <span className="text-sm font-medium text-amber-600">₹{book.royaltyPending.toLocaleString()}</span>

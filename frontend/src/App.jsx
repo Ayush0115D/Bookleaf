@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 import AuthorDashboard from './pages/author/AuthorDashboard';
 import MyBooks from './pages/author/MyBooks';
 import SubmitTicket from './pages/author/SubmitTicket';
@@ -27,6 +28,7 @@ function AppLayout() {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );

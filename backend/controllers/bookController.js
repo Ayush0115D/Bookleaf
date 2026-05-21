@@ -18,6 +18,26 @@ exports.getMyBooks = async (req, res, next) => {
   }
 };
 
+exports.createBook = async (req, res, next) => {
+  try {
+    const { title, isbn, genre, publishDate, mrp, status } = req.body;
+
+    const book = await Book.create({
+      title,
+      isbn,
+      genre,
+      mrp,
+      status: status || 'Manuscript Received',
+      publishDate: publishDate || undefined,
+      authorId: req.user._id,
+    });
+
+    res.status(201).json({ book });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getAllBooks = async (req, res, next) => {
   try {
     const books = await Book.find().populate('authorId', 'name email').sort({ createdAt: -1 });

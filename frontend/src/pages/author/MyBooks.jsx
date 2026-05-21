@@ -64,8 +64,17 @@ export default function MyBooks() {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({ title: '', isbn: '', genre: '', mrp: '', publishDate: '', status: 'Manuscript Received' });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
+    loadBooks();
+  }, []);
+
+  const loadBooks = () => {
+    setLoading(true);
     api.get('/books')
       .then((res) => {
         setBooks(res.data.books);
@@ -73,7 +82,31 @@ export default function MyBooks() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSubmitting(true);
+    try {
+      await api.post('/books', {
+        ...form,
+        mrp: Number(form.mrp),
+        publishDate: form.publishDate || undefined,
+      });
+      setShowModal(false);
+      setForm({ title: '', isbn: '', genre: '', mrp: '', publishDate: '', status: 'Manuscript Received' });
+      loadBooks();
+    } catch (err) {
+      setError(err.response?.data?.message || err.response?.data?.error || 'Failed to add book');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (loading) return <LoadingSpinner />;
 
@@ -119,18 +152,105 @@ export default function MyBooks() {
         <div className="p-4 sm:p-6 border-b border-gray-100 dark:border-navy-700">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">All Books</h2>
-            <div className="relative w-full sm:w-72">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <SearchIcon />
+            <div className="flex items-center gap-3">
+              <div className="relative w-full sm:w-64">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <SearchIcon />
+                </div>
+                <input
+                  type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by title or ISBN..."
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40 transition-all duration-200"
+                />
               </div>
-              <input
-                type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by title or ISBN..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40 transition-all duration-200"
-              />
+              <button
+                onClick={() => setShowModal(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gold-600 hover:bg-gold-700 text-white rounded-xl text-sm font-medium transition-colors duration-200 whitespace-nowrap"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Add Book
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Add Book Modal */}
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-navy-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-navy-700 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-navy-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add New Book</h3>
+                <button onClick={() => { setShowModal(false); setError(''); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                {error && (
+                  <div className="p-3 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-sm text-red-600 dark:text-red-400">
+                    {error}
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Title *</label>
+                  <input type="text" name="title" value={form.title} onChange={handleChange} required
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">ISBN *</label>
+                  <input type="text" name="isbn" value={form.isbn} onChange={handleChange} required
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Genre *</label>
+                  <input type="text" name="genre" value={form.genre} onChange={handleChange} required
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">MRP (₹) *</label>
+                  <input type="number" name="mrp" value={form.mrp} onChange={handleChange} required min="0" step="0.01"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Publish Date</label>
+                  <input type="date" name="publishDate" value={form.publishDate} onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Status</label>
+                  <select name="status" value={form.status} onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
+                  >
+                    {Object.keys(statusColors).map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button type="button" onClick={() => { setShowModal(false); setError(''); }}
+                    className="px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-700 rounded-xl transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={submitting}
+                    className="px-6 py-2.5 bg-gold-600 hover:bg-gold-700 disabled:bg-gold-600/50 text-white rounded-xl text-sm font-medium transition-colors duration-200"
+                  >
+                    {submitting ? 'Adding...' : 'Add Book'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full">

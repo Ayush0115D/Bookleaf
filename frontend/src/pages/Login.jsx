@@ -215,7 +215,7 @@ export default function Login() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-1 h-1 rounded-full bg-teal-500" />
-                <span className="font-mono text-gray-400">ravi.sharma@email.com</span>
+                <span className="font-mono text-gray-400">author1234@gmail.com</span>
                 <span className="text-gray-600">/</span>
                 <span className="font-mono text-gray-400">author123</span>
                 <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-teal-500/10 text-teal-400">Author</span>

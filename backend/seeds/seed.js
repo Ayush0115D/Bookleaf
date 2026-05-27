@@ -4,11 +4,11 @@ const Ticket = require('../models/Ticket');
 
 const authors = [
   {
-    name: 'Ravi Sharma',
-    email: 'ravi.sharma@email.com',
+    name: 'Author User',
+    email: 'author1234@gmail.com',
     password: 'author123',
     role: 'author',
-    bankDetails: { accountHolder: 'Ravi Sharma', accountNumber: 'XXXX1234', ifscCode: 'SBIN001234', bankName: 'State Bank of India' },
+    bankDetails: { accountHolder: 'Author User', accountNumber: 'XXXX1234', ifscCode: 'SBIN001234', bankName: 'State Bank of India' },
   },
   {
     name: 'Priya Patel',

@@ -37,10 +37,21 @@ function TicketIcon() {
   );
 }
 
+function SendIcon() {
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="22" y1="2" x2="11" y2="13" />
+      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+    </svg>
+  );
+}
+
 export default function MyTickets() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [replyText, setReplyText] = useState('');
+  const [sending, setSending] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -72,8 +83,25 @@ export default function MyTickets() {
     try {
       const res = await api.get(`/tickets/${id}`);
       setSelectedTicket(res.data.ticket);
+      setReplyText('');
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleReply = async (e) => {
+    e.preventDefault();
+    if (!replyText.trim() || sending) return;
+    setSending(true);
+    try {
+      const res = await api.post(`/tickets/${selectedTicket._id}/reply`, { text: replyText });
+      setSelectedTicket(res.data.ticket);
+      setTickets((prev) => prev.map((t) => (t._id === res.data.ticket._id ? res.data.ticket : t)));
+      setReplyText('');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSending(false);
     }
   };
 
@@ -154,7 +182,7 @@ export default function MyTickets() {
                   </p>
                 </div>
 
-                <div className="p-6 space-y-4 max-h-[55vh] overflow-y-auto">
+                <div className="p-6 space-y-4 max-h-[45vh] overflow-y-auto">
                   {selectedTicket.messages.map((msg, i) => (
                     <div key={i} className={`flex ${msg.sender === 'author' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
                       <div className={`max-w-[80%] p-4 rounded-2xl ${
@@ -173,6 +201,35 @@ export default function MyTickets() {
                     </div>
                   ))}
                 </div>
+
+                {(selectedTicket.status !== 'Resolved' && selectedTicket.status !== 'Closed') && (
+                  <form onSubmit={handleReply} className="px-6 pb-6 pt-2 border-t border-gray-100 dark:border-gray-700">
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        placeholder="Type your reply..."
+                        className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-shadow duration-200"
+                      />
+                      <button
+                        type="submit"
+                        disabled={sending || !replyText.trim()}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-600 text-white rounded-xl font-medium text-sm hover:bg-gold-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                      >
+                        {sending ? (
+                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                        ) : (
+                          <SendIcon />
+                        )}
+                        Send
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             ) : (
               <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-12 text-center h-full flex items-center justify-center">

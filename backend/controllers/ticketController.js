@@ -2,6 +2,52 @@ const Ticket = require('../models/Ticket');
 const { classifyTicket } = require('../services/aiService');
 const { validationResult } = require('express-validator');
 
+exports.replyToTicket = async (req, res, next) => {
+  try {
+    const { text } = req.body;
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: 'Reply text is required' });
+    }
+
+    const ticket = await Ticket.findById(req.params.id);
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    if (ticket.authorId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    if (ticket.status === 'Resolved' || ticket.status === 'Closed') {
+      return res.status(400).json({ error: 'Cannot reply to a resolved or closed ticket' });
+    }
+
+    ticket.messages.push({
+      sender: 'author',
+      text: text.trim(),
+    });
+
+    if (ticket.status !== 'Open') {
+      ticket.status = 'Open';
+    }
+
+    await ticket.save();
+
+    const populated = await Ticket.findById(ticket._id)
+      .populate('authorId', 'name email')
+      .populate('bookId', 'title isbn');
+
+    const io = req.app.get('io');
+    if (io) {
+      io.to('admin:room').emit('ticket:updated', populated);
+    }
+
+    res.json({ ticket: populated });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.createTicket = async (req, res, next) => {
   try {
     const errors = validationResult(req);

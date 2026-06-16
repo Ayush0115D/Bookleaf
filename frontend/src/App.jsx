@@ -10,6 +10,7 @@ import MyTickets from './pages/author/MyTickets';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import TicketQueue from './pages/admin/TicketQueue';
 import TicketDetail from './pages/admin/TicketDetail';
+import Profile from './pages/Profile';
 import LoadingSpinner from './components/LoadingSpinner';
 
 function AppLayout() {
@@ -45,6 +46,7 @@ function AppLayout() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/tickets" element={<TicketQueue />} />
           <Route path="/admin/tickets/:id" element={<TicketDetail />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<Navigate to={dashboardPath} replace />} />
         </Routes>
       </main>

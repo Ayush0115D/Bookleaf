@@ -84,6 +84,96 @@ exports.getMe = async (req, res, next) => {
   }
 };
 
+exports.updateProfile = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Validation failed', details: errors.array() });
+    }
+
+    const { name, email } = req.body;
+    const userId = req.user._id;
+
+    if (email && email !== req.user.email) {
+      const existing = await User.findOne({ email, _id: { $ne: userId } });
+      if (existing) {
+        return res.status(409).json({ error: 'This email is already in use' });
+      }
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { name, email },
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        bankDetails: user.bankDetails,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.changePassword = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Validation failed', details: errors.array() });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user._id).select('+password');
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateBankDetails = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Validation failed', details: errors.array() });
+    }
+
+    const { accountHolder, accountNumber, ifscCode, bankName } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { bankDetails: { accountHolder, accountNumber, ifscCode, bankName } },
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        bankDetails: user.bankDetails,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getAuthors = async (req, res, next) => {
   try {
     const authors = await User.find({ role: 'author' }).select('-password');

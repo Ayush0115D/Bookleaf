@@ -84,6 +84,10 @@ const ticketSchema = new mongoose.Schema({
     ref: 'User',
     default: null,
   },
+  resolvedAt: {
+    type: Date,
+    default: null,
+  },
   aiClassified: {
     type: Boolean,
     default: false,

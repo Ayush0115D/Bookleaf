@@ -56,6 +56,10 @@ const bookSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  coverImage: {
+    url: { type: String, default: '' },
+    publicId: { type: String, default: '' },
+  },
   authorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

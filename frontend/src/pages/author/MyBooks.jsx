@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
@@ -66,12 +66,27 @@ export default function MyBooks() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ title: '', isbn: '', genre: '', mrp: '', publishDate: '', status: 'Manuscript Received', copiesSold: '', royaltyEarned: '', royaltyPaid: '', royaltyPending: '' });
+  const [coverFile, setCoverFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [previewCover, setPreviewCover] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [rowUploadProgress, setRowUploadProgress] = useState(0);
+  const [uploadingRowId, setUploadingRowId] = useState(null);
+  const coverInputRef = useRef(null);
+  const rowCoverInputRef = useRef(null);
+  const rowCoverBookRef = useRef(null);
 
   useEffect(() => {
     loadBooks();
   }, []);
+
+  useEffect(() => {
+    if (!previewCover) return;
+    const handler = (e) => { if (e.key === 'Escape') setPreviewCover(null); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [previewCover]);
 
   const loadBooks = () => {
     setLoading(true);
@@ -88,27 +103,89 @@ export default function MyBooks() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleCoverChange = (e) => {
+    const selected = e.target.files[0];
+    if (selected) {
+      const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowed.includes(selected.type)) {
+        setError('Invalid file type. Allowed: JPEG, PNG, GIF, WebP');
+        e.target.value = '';
+        return;
+      }
+      if (selected.size > 5 * 1024 * 1024) {
+        setError('File too large. Maximum size is 5MB');
+        e.target.value = '';
+        return;
+      }
+      setCoverFile(selected);
+      setError('');
+    }
+  };
+
+  const removeCover = () => {
+    setCoverFile(null);
+    if (coverInputRef.current) coverInputRef.current.value = '';
+  };
+
+  const handleRowCoverUpload = async (e) => {
+    const file = e.target.files[0];
+    const bookId = rowCoverBookRef.current;
+    if (!file || !bookId) return;
+    setUploadingRowId(bookId);
+    setRowUploadProgress(0);
+    try {
+      const fd = new FormData();
+      fd.append('cover', file);
+      await api.put(`/books/${bookId}/cover`, fd, {
+        onUploadProgress: (progressEvent) => {
+          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setRowUploadProgress(percent);
+        },
+      });
+      loadBooks();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to upload cover');
+    }
+    rowCoverBookRef.current = null;
+    setUploadingRowId(null);
+    setRowUploadProgress(0);
+    e.target.value = '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSubmitting(true);
+    setUploadProgress(0);
     try {
-      await api.post('/books', {
-        ...form,
-        mrp: Number(form.mrp),
-        copiesSold: form.copiesSold ? Number(form.copiesSold) : 0,
-        royaltyEarned: form.royaltyEarned ? Number(form.royaltyEarned) : 0,
-        royaltyPaid: form.royaltyPaid ? Number(form.royaltyPaid) : 0,
-        royaltyPending: form.royaltyPending ? Number(form.royaltyPending) : 0,
-        publishDate: form.publishDate || undefined,
+      const payload = new FormData();
+      payload.append('title', form.title);
+      payload.append('isbn', form.isbn);
+      payload.append('genre', form.genre);
+      payload.append('mrp', Number(form.mrp));
+      payload.append('status', form.status);
+      if (form.publishDate) payload.append('publishDate', form.publishDate);
+      payload.append('copiesSold', form.copiesSold || 0);
+      payload.append('royaltyEarned', form.royaltyEarned || 0);
+      payload.append('royaltyPaid', form.royaltyPaid || 0);
+      payload.append('royaltyPending', form.royaltyPending || 0);
+      if (coverFile) payload.append('cover', coverFile);
+
+      await api.post('/books', payload, {
+        onUploadProgress: (progressEvent) => {
+          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percent);
+        },
       });
       setShowModal(false);
       setForm({ title: '', isbn: '', genre: '', mrp: '', publishDate: '', status: 'Manuscript Received', copiesSold: '', royaltyEarned: '', royaltyPaid: '', royaltyPending: '' });
+      setCoverFile(null);
       loadBooks();
     } catch (err) {
       setError(err.response?.data?.message || err.response?.data?.error || 'Failed to add book');
     } finally {
       setSubmitting(false);
+      setUploadProgress(0);
     }
   };
 
@@ -187,7 +264,7 @@ export default function MyBooks() {
             <div className="bg-white dark:bg-navy-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-navy-700 w-full max-w-lg max-h-[80vh] overflow-y-auto">
               <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-navy-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add New Book</h3>
-                <button onClick={() => { setShowModal(false); setError(''); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                <button onClick={() => { setShowModal(false); setError(''); removeCover(); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
@@ -263,8 +340,52 @@ export default function MyBooks() {
                     ))}
                   </select>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Cover Image (optional)</label>
+                  {coverFile ? (
+                    <div className="flex items-center gap-3 px-4 py-3 border border-gold-400 bg-gold-50/50 dark:bg-gold-900/20 rounded-xl">
+                      <svg className="w-5 h-5 text-gold-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+                      </svg>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{coverFile.name}</p>
+                        <p className="text-xs text-gray-400">{(coverFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                      </div>
+                      <button type="button" onClick={removeCover} className="text-gray-400 hover:text-red-500 transition-colors">
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer hover:border-gold-400 hover:bg-gold-50/50 dark:hover:bg-gold-900/20 transition-all duration-200">
+                      <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+                      </svg>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Click to upload cover image</p>
+                        <p className="text-xs text-gray-400">JPEG, PNG, GIF, WebP up to 5MB</p>
+                      </div>
+                      <input ref={coverInputRef} type="file" onChange={handleCoverChange} className="hidden" accept=".jpg,.jpeg,.png,.gif,.webp" />
+                    </label>
+                  )}
+                </div>
+                {submitting && coverFile && (
+                  <div>
+                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
+                      <span>Uploading cover...</span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-gray-200 dark:bg-navy-600 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gold-500 rounded-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center justify-end gap-3 pt-2">
-                  <button type="button" onClick={() => { setShowModal(false); setError(''); }}
+                  <button type="button" onClick={() => { setShowModal(false); setError(''); removeCover(); }}
                     className="px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-700 rounded-xl transition-colors"
                   >
                     Cancel
@@ -299,7 +420,41 @@ export default function MyBooks() {
               {filteredBooks.map((book) => (
                 <tr key={book._id} className="hover:bg-gray-50 dark:hover:bg-navy-700/30 transition-colors duration-150">
                   <td className="px-4 sm:px-6 py-4">
-                    <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">{book.title}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-14 rounded-lg overflow-hidden shrink-0 bg-gray-100 dark:bg-navy-700 flex items-center justify-center">
+                        {book.coverImage?.url ? (
+                          <img src={book.coverImage.url} alt={book.title} className="w-full h-full object-cover cursor-pointer" onClick={() => setPreviewCover(book.coverImage.url)} />
+                        ) : (
+                          <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">{book.title}</p>
+                        {!book.coverImage?.url && (
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <button
+                              onClick={() => { rowCoverBookRef.current = book._id; rowCoverInputRef.current?.click(); }}
+                              className="text-xs text-gold-600 hover:text-gold-700 dark:text-gold-400 dark:hover:text-gold-300 flex items-center gap-1"
+                            >
+                              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+                              </svg>
+                              Add cover
+                            </button>
+                            {uploadingRowId === book._id && (
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-16 h-1.5 bg-gray-200 dark:bg-navy-600 rounded-full overflow-hidden">
+                                  <div className="h-full bg-gold-500 rounded-full transition-all duration-300" style={{ width: `${rowUploadProgress}%` }} />
+                                </div>
+                                <span className="text-[10px] text-gray-400">{rowUploadProgress}%</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell font-mono">{book.isbn}</td>
                   <td className="px-4 sm:px-6 py-4 text-sm text-gray-600 dark:text-gray-300 hidden md:table-cell">{book.genre}</td>
@@ -335,6 +490,37 @@ export default function MyBooks() {
           </table>
         </div>
       </div>
+
+      <input
+        ref={rowCoverInputRef}
+        type="file"
+        accept=".jpg,.jpeg,.png,.gif,.webp"
+        className="hidden"
+        onChange={handleRowCoverUpload}
+      />
+
+      {previewCover && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          onClick={() => setPreviewCover(null)}
+        >
+          <div className="relative max-w-3xl max-h-[90vh]">
+            <button
+              onClick={() => setPreviewCover(null)}
+              className="absolute -top-3 -right-3 z-10 w-8 h-8 rounded-full bg-white dark:bg-navy-800 shadow-lg flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <img
+              src={previewCover}
+              alt="Book cover"
+              className="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

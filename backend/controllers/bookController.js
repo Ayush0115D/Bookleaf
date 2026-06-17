@@ -1,4 +1,5 @@
 const Book = require('../models/Book');
+const { uploadFile } = require('../services/cloudinary');
 
 exports.getMyBooks = async (req, res, next) => {
   try {
@@ -22,6 +23,16 @@ exports.createBook = async (req, res, next) => {
   try {
     const { title, isbn, genre, publishDate, mrp, status, copiesSold, royaltyEarned, royaltyPaid, royaltyPending } = req.body;
 
+    let coverImage;
+    if (req.file) {
+      try {
+        const result = await uploadFile(req.file.buffer, req.file.originalname, 'bookleaf/covers');
+        coverImage = { url: result.url, publicId: result.publicId };
+      } catch (uploadErr) {
+        console.error('Cover upload failed:', uploadErr.message);
+      }
+    }
+
     const book = await Book.create({
       title,
       isbn,
@@ -34,9 +45,41 @@ exports.createBook = async (req, res, next) => {
       royaltyPaid: Number(royaltyPaid) || 0,
       royaltyPending: Number(royaltyPending) || 0,
       authorId: req.user._id,
+      ...(coverImage && { coverImage }),
     });
 
     res.status(201).json({ book });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateBookCover = async (req, res, next) => {
+  try {
+    const book = await Book.findOne({ _id: req.params.id, authorId: req.user._id });
+    if (!book) return res.status(404).json({ error: 'Book not found' });
+
+    if (!req.file) return res.status(400).json({ error: 'No file provided' });
+
+    const result = await uploadFile(req.file.buffer, req.file.originalname, 'bookleaf/covers');
+    book.coverImage = { url: result.url, publicId: result.publicId };
+    await book.save();
+
+    res.json({ book });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteBookCover = async (req, res, next) => {
+  try {
+    const book = await Book.findOne({ _id: req.params.id, authorId: req.user._id });
+    if (!book) return res.status(404).json({ error: 'Book not found' });
+
+    book.coverImage = undefined;
+    await book.save();
+
+    res.json({ book });
   } catch (error) {
     next(error);
   }

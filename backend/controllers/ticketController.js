@@ -1,5 +1,6 @@
 const Ticket = require('../models/Ticket');
 const { uploadFile } = require('../services/cloudinary');
+const { autoCloseResolvedTickets } = require('../services/autoClose');
 const { validationResult } = require('express-validator');
 
 exports.replyToTicket = async (req, res, next) => {
@@ -94,6 +95,7 @@ exports.createTicket = async (req, res, next) => {
 
 exports.getMyTickets = async (req, res, next) => {
   try {
+    await autoCloseResolvedTickets();
     const tickets = await Ticket.find({ authorId: req.user._id })
       .populate('bookId', 'title isbn')
       .sort({ updatedAt: -1 });

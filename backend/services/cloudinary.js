@@ -24,17 +24,19 @@ function initCloudinary() {
 
 const cloudinaryAvailable = initCloudinary();
 
-async function uploadFile(buffer, filename) {
+async function uploadFile(buffer, filename, folder = 'bookleaf/tickets') {
   if (!cloudinaryAvailable) {
     throw new Error('Cloudinary not configured');
   }
 
+  const prefix = folder === 'bookleaf/covers' ? 'cover' : 'ticket';
+
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        folder: 'bookleaf/tickets',
+        folder,
         resource_type: 'auto',
-        public_id: `ticket_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+        public_id: `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
       },
       (error, result) => {
         if (error) return reject(error);

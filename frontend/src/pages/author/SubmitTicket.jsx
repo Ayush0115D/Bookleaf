@@ -158,19 +158,29 @@ export default function SubmitTicket() {
       <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 sm:p-8 space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Related Book <span className="text-gray-400 font-normal">(ISBN / Book ID)</span></label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <BookIcon />
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <BookIcon />
+              </div>
+              <select
+                value={bookId} onChange={(e) => setBookId(e.target.value)}
+                className="w-full pl-11 pr-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-shadow duration-200 appearance-none"
+              >
+                <option value="">General / Account Level</option>
+                {books.map((book) => (
+                  <option key={book._id} value={book._id}>{book.title} — ISBN: {book.isbn}</option>
+                ))}
+              </select>
             </div>
-            <select
-              value={bookId} onChange={(e) => setBookId(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-shadow duration-200 appearance-none"
-            >
-              <option value="">General / Account Level</option>
-              {books.map((book) => (
-                <option key={book._id} value={book._id}>{book.title} — ISBN: {book.isbn}</option>
-              ))}
-            </select>
+            {bookId && (() => {
+              const selected = books.find(b => b._id === bookId);
+              return selected?.coverImage?.url ? (
+                <div className="w-10 h-14 rounded-lg overflow-hidden shrink-0 border border-gray-200 dark:border-gray-600">
+                  <img src={selected.coverImage.url} alt={selected.title} className="w-full h-full object-cover" />
+                </div>
+              ) : null;
+            })()}
           </div>
         </div>
 

@@ -1,8 +1,11 @@
 const Ticket = require('../models/Ticket');
 const { generateDraftResponse, classifyTicket } = require('../services/aiService');
+const { autoCloseResolvedTickets } = require('../services/autoClose');
 
 exports.getAdminTickets = async (req, res, next) => {
   try {
+    await autoCloseResolvedTickets();
+
     const { status, category, priority, authorId, search } = req.query;
     const filter = {};
 
@@ -64,7 +67,12 @@ exports.updateTicket = async (req, res, next) => {
       return res.status(404).json({ error: 'Ticket not found' });
     }
 
-    if (status) ticket.status = status;
+    if (status) {
+      ticket.status = status;
+      if (status === 'Resolved') {
+        ticket.resolvedAt = new Date();
+      }
+    }
     if (category) {
       ticket.category = category;
       ticket.aiClassified = false;

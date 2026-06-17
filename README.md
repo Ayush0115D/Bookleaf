@@ -24,8 +24,8 @@ Built for the **BookLeaf Publishing Technical Assignment**.
 
 ### Author Portal
 - **Email/Password Login** — Simple authentication, role-based redirect
-- **My Books** — View published books with MRP, sales, royalty earned/paid/pending; add books with sales data
-- **Submit Support Ticket** — Select a book (or general), subject, description, file attachment with Multer + Cloudinary upload
+- **My Books** — View published books with MRP, sales, royalty earned/paid/pending; add books with sales data and cover image upload; click cover thumbnail to preview at full size
+- **Submit Support Ticket** — Select a book (or general) with cover thumbnail preview, subject, description, file attachment with Multer + Cloudinary upload
 - **My Tickets** — Real-time ticket tracking with conversation view, status badges, priority indicators, attachment previews
 - **Reply to Tickets** — Two-way communication: authors can reply to their own open tickets; reopens ticket if it was in progress
 - **Profile Settings** — Update name, email, and change password (`/profile`)
@@ -37,8 +37,13 @@ Built for the **BookLeaf Publishing Technical Assignment**.
 - **AI Re-classification** — One-click re-run AI on any ticket to re-categorize and re-prioritize
 - **Manual Override Controls** — Admins can set category, priority, status, and assignment manually
 - **Ticket Management** — Update status, assign to admins, add internal notes (hidden from authors)
+- **Auto-Close Resolved Tickets** — Tickets resolved with no author reply for 7 days are automatically closed
 - **Real-Time Updates** — Socket.io pushes ticket changes instantly to both authors and admins
 - **Profile Settings** — Update name, email, and change password (`/profile`)
+
+### General
+- **Book Cover Upload** — Add cover images when creating a book or upload later via the inline "Add cover" button; upload progress bar shows during transfer
+- **Cover Preview** — Click any cover thumbnail to open a full-size lightbox overlay; close via Esc or click outside
 
 ### AI Integration
 - **Gemini 1.5 Flash** — Low-cost, fast model ideal for classification and text generation
@@ -75,6 +80,7 @@ bookleaf-portal/
 │   │   └── upload.js               # Multer memory storage (10 MB, JPEG/PNG/GIF/PDF/DOC/DOCX)
 │   ├── services/
 │   │   ├── aiService.js            # Gemini API wrapper with retry, token tracking
+│   │   ├── autoClose.js            # Auto-close resolved tickets after 7 days
 │   │   ├── cloudinary.js           # Cloudinary upload stream helper
 │   │   └── knowledgeBase.js        # BookLeaf policies by category (cost-optimized)
 │   ├── sockets/ticketSocket.js     # Socket.io room management
@@ -212,7 +218,9 @@ Full API documentation with request/response examples is at:
 | GET | `/api/auth/authors` | Admin | List all authors |
 | GET | `/api/auth/admins` | Admin | List all admins |
 | GET | `/api/books` | Author | My books + stats |
-| POST | `/api/books` | Author | Add a new book |
+| POST | `/api/books` | Author | Add a new book (supports cover image upload) |
+| PUT | `/api/books/:id/cover` | Author | Upload/replace book cover image |
+| DELETE | `/api/books/:id/cover` | Author | Remove book cover image |
 | GET | `/api/books/all` | Admin | All books (populated) |
 | POST | `/api/tickets` | Author | Create ticket (no AI — admin classifies later) |
 | GET | `/api/tickets` | Author | My tickets |
@@ -254,6 +262,17 @@ Full API documentation with request/response examples is at:
 - API key stored in `backend/.env` — never hardcoded
 - AI calls made **server-side only** — frontend never sees the key
 - All routes protected by JWT middleware
+
+---
+
+## Known Limitations & Future Improvements
+
+- **Email notifications** — No email triggers for ticket updates. Would integrate with SendGrid/Resend.
+- **Pagination** — Ticket lists don't paginate. Would add cursor-based pagination for scale.
+- **Admin assignment** — Simple dropdown; no workload balancing or auto-assignment.
+- **File type validation** — Only checked server-side; frontend doesn't restrict file picker.
+- **Auto-close trigger** — Only runs when ticket queue is fetched (no background cron). Would add a periodic job for production.
+- **Testing** — No test suite. Would add Jest + React Testing Library.
 
 ---
 

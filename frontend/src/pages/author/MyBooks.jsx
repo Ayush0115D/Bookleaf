@@ -65,7 +65,7 @@ export default function MyBooks() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ title: '', isbn: '', genre: '', mrp: '', publishDate: '', status: 'Manuscript Received' });
+  const [form, setForm] = useState({ title: '', isbn: '', genre: '', mrp: '', publishDate: '', status: 'Manuscript Received', copiesSold: '', royaltyEarned: '', royaltyPaid: '', royaltyPending: '' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -96,10 +96,14 @@ export default function MyBooks() {
       await api.post('/books', {
         ...form,
         mrp: Number(form.mrp),
+        copiesSold: form.copiesSold ? Number(form.copiesSold) : 0,
+        royaltyEarned: form.royaltyEarned ? Number(form.royaltyEarned) : 0,
+        royaltyPaid: form.royaltyPaid ? Number(form.royaltyPaid) : 0,
+        royaltyPending: form.royaltyPending ? Number(form.royaltyPending) : 0,
         publishDate: form.publishDate || undefined,
       });
       setShowModal(false);
-      setForm({ title: '', isbn: '', genre: '', mrp: '', publishDate: '', status: 'Manuscript Received' });
+      setForm({ title: '', isbn: '', genre: '', mrp: '', publishDate: '', status: 'Manuscript Received', copiesSold: '', royaltyEarned: '', royaltyPaid: '', royaltyPending: '' });
       loadBooks();
     } catch (err) {
       setError(err.response?.data?.message || err.response?.data?.error || 'Failed to add book');
@@ -179,8 +183,8 @@ export default function MyBooks() {
 
         {/* Add Book Modal */}
         {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-navy-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-navy-700 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 pt-[10vh]">
+            <div className="bg-white dark:bg-navy-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-navy-700 w-full max-w-lg max-h-[80vh] overflow-y-auto">
               <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-navy-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add New Book</h3>
                 <button onClick={() => { setShowModal(false); setError(''); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
@@ -216,6 +220,30 @@ export default function MyBooks() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">MRP (₹) *</label>
                   <input type="number" name="mrp" value={form.mrp} onChange={handleChange} required min="0" step="0.01"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Copies Sold</label>
+                  <input type="number" name="copiesSold" value={form.copiesSold} onChange={handleChange} min="0"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Total Money Earned (₹)</label>
+                  <input type="number" name="royaltyEarned" value={form.royaltyEarned} onChange={handleChange} min="0"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Already Received (₹)</label>
+                  <input type="number" name="royaltyPaid" value={form.royaltyPaid} onChange={handleChange} min="0"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Still Left to Get (₹)</label>
+                  <input type="number" name="royaltyPending" value={form.royaltyPending} onChange={handleChange} min="0"
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/30 focus:border-gold-500/40"
                   />
                 </div>
@@ -263,8 +291,8 @@ export default function MyBooks() {
                 <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">MRP</th>
                 <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden sm:table-cell">Sold</th>
                 <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Earned</th>
-                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden lg:table-cell">Paid</th>
-                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pending</th>
+                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden lg:table-cell">Received</th>
+                <th className="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Left</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-navy-700/50">

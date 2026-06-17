@@ -20,7 +20,7 @@ exports.getMyBooks = async (req, res, next) => {
 
 exports.createBook = async (req, res, next) => {
   try {
-    const { title, isbn, genre, publishDate, mrp, status } = req.body;
+    const { title, isbn, genre, publishDate, mrp, status, copiesSold, royaltyEarned, royaltyPaid, royaltyPending } = req.body;
 
     const book = await Book.create({
       title,
@@ -29,6 +29,10 @@ exports.createBook = async (req, res, next) => {
       mrp,
       status: status || 'Manuscript Received',
       publishDate: publishDate || undefined,
+      copiesSold: Number(copiesSold) || 0,
+      royaltyEarned: Number(royaltyEarned) || 0,
+      royaltyPaid: Number(royaltyPaid) || 0,
+      royaltyPending: Number(royaltyPending) || 0,
       authorId: req.user._id,
     });
 

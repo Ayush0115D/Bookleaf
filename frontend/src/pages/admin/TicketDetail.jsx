@@ -121,7 +121,7 @@ export default function TicketDetail() {
 
     api.get('/auth/admins')
       .then((res) => setAdmins(res.data.admins))
-      .catch(() => {});
+      .catch((err) => console.error('Failed to load admins:', err));
   }, [id]);
 
   const showMessage = (text, type = 'success') => {

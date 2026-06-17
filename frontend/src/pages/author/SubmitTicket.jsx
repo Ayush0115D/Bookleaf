@@ -157,7 +157,7 @@ export default function SubmitTicket() {
 
       <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 sm:p-8 space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Related Book</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Related Book <span className="text-gray-400 font-normal">(ISBN / Book ID)</span></label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
               <BookIcon />
@@ -168,7 +168,7 @@ export default function SubmitTicket() {
             >
               <option value="">General / Account Level</option>
               {books.map((book) => (
-                <option key={book._id} value={book._id}>{book.title}</option>
+                <option key={book._id} value={book._id}>{book.title} — ISBN: {book.isbn}</option>
               ))}
             </select>
           </div>

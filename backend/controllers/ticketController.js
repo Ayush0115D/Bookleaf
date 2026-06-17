@@ -1,5 +1,5 @@
 const Ticket = require('../models/Ticket');
-const { classifyTicket } = require('../services/aiService');
+const { uploadFile } = require('../services/cloudinary');
 const { validationResult } = require('express-validator');
 
 exports.replyToTicket = async (req, res, next) => {
@@ -65,17 +65,13 @@ exports.createTicket = async (req, res, next) => {
       messages: [{ sender: 'author', text: description }],
     });
 
-    let aiResult = { category: 'General Inquiry', priority: 'Medium', reasoning: 'Classification pending' };
-    try {
-      aiResult = await classifyTicket(subject, description);
-      ticket.category = aiResult.category;
-      ticket.priority = aiResult.priority;
-      ticket.aiClassified = true;
-    } catch (aiError) {
-      console.error('AI classification failed during ticket creation:', aiError.message);
-      ticket.category = 'General Inquiry';
-      ticket.priority = 'Medium';
-      ticket.aiClassified = false;
+    if (req.file) {
+      try {
+        const uploaded = await uploadFile(req.file.buffer, req.file.originalname);
+        ticket.attachments.push(uploaded);
+      } catch (uploadError) {
+        console.error('File upload failed:', uploadError.message);
+      }
     }
 
     await ticket.save();
@@ -90,7 +86,7 @@ exports.createTicket = async (req, res, next) => {
       io.to('admin:room').emit('ticket:new', populatedTicket);
     }
 
-    res.status(201).json({ ticket: populatedTicket, aiResult });
+    res.status(201).json({ ticket: populatedTicket });
   } catch (error) {
     next(error);
   }

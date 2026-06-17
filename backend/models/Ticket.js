@@ -88,6 +88,11 @@ const ticketSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  attachments: [{
+    url: { type: String, required: true },
+    publicId: { type: String, required: true },
+    filename: { type: String, required: true },
+  }],
 }, { timestamps: true });
 
 ticketSchema.index({ authorId: 1, createdAt: -1 });

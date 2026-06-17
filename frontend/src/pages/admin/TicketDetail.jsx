@@ -76,6 +76,17 @@ function UserIcon() {
   );
 }
 
+function AttachIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+    </svg>
+  );
+}
+
 function FileTextIcon() {
   return (
     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -247,6 +258,21 @@ export default function TicketDetail() {
               <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Original Description</p>
               <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">{ticket.description}</p>
             </div>
+            {ticket.attachments?.length > 0 && (
+              <div className="mt-4">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Attachments</p>
+                <div className="flex flex-wrap gap-2">
+                  {ticket.attachments.map((att, i) => (
+                    <a key={i} href={att.url} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 bg-gray-50 dark:bg-navy-700 rounded-lg hover:bg-gold-50 dark:hover:bg-gold-900/20 transition-colors text-sm text-gray-700 dark:text-gray-300 hover:text-gold-600 dark:hover:text-gold-400"
+                    >
+                      <AttachIcon />
+                      <span className="truncate max-w-[200px]">{att.filename}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 flex items-center gap-3">
               <span>Created: {new Date(ticket.createdAt).toLocaleString()}</span>
               <span>Updated: {new Date(ticket.updatedAt).toLocaleString()}</span>

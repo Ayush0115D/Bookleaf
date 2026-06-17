@@ -126,11 +126,11 @@ Get all books across all authors. **Auth:** Admin only.
 ## Ticket Endpoints (Author)
 
 ### `POST /api/tickets`
-Create a new support ticket. Triggers **AI auto-classification** and **priority scoring**.
+Create a new support ticket. Triggers **AI auto-classification** and **priority scoring**. Accepts both JSON and `multipart/form-data` (for file uploads).
 
 **Auth:** Author
 
-**Body:**
+**Body (JSON):**
 ```json
 {
   "bookId": "optional_book_id_or_null",
@@ -139,10 +139,21 @@ Create a new support ticket. Triggers **AI auto-classification** and **priority 
 }
 ```
 
+**Body (multipart/form-data):**
+| Field | Type | Description |
+|-------|------|-------------|
+| `bookId` | string | Optional book ID |
+| `subject` | string | Ticket subject |
+| `description` | string | Ticket description |
+| `attachment` | file | Optional file (JPEG, PNG, GIF, PDF, DOC, DOCX; max 10MB) |
+
 **Response (201):**
 ```json
 {
-  "ticket": { "ticket_object" },
+  "ticket": {
+    ...ticket_object,
+    "attachments": [{ "url": "https://res.cloudinary.com/...", "publicId": "...", "filename": "document.pdf" }]
+  },
   "aiResult": {
     "category": "Royalty & Payments",
     "priority": "Critical",

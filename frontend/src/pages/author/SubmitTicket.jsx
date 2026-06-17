@@ -61,6 +61,7 @@ export default function SubmitTicket() {
   const [bookId, setBookId] = useState('');
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
+  const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -70,16 +71,42 @@ export default function SubmitTicket() {
     api.get('/books').then((res) => setBooks(res.data.books)).catch(console.error);
   }, []);
 
+  const handleFileChange = (e) => {
+    const selected = e.target.files[0];
+    if (selected) {
+      const allowed = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowed.includes(selected.type)) {
+        setError('Invalid file type. Allowed: JPEG, PNG, GIF, PDF, DOC, DOCX');
+        e.target.value = '';
+        return;
+      }
+      if (selected.size > 10 * 1024 * 1024) {
+        setError('File too large. Maximum size is 10MB');
+        e.target.value = '';
+        return;
+      }
+      setFile(selected);
+      setError('');
+    }
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    document.getElementById('file-input').value = '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSubmitting(true);
     try {
-      await api.post('/tickets', {
-        bookId: bookId || null,
-        subject,
-        description,
-      });
+      const formData = new FormData();
+      if (bookId) formData.append('bookId', bookId);
+      formData.append('subject', subject);
+      formData.append('description', description);
+      if (file) formData.append('attachment', file);
+
+      await api.post('/tickets', formData);
       setSuccess(true);
       setTimeout(() => navigate('/author/tickets'), 1500);
     } catch (err) {
@@ -177,15 +204,29 @@ export default function SubmitTicket() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Attachment (optional)</label>
-            <label className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer hover:border-gold-400 hover:bg-gold-50/50 dark:hover:bg-gold-900/20 transition-all duration-200">
-            <AttachIcon />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Click to upload a file</p>
-              <p className="text-xs text-gray-400">PDF, PNG, JPG up to 10MB</p>
+          {file ? (
+            <div className="flex items-center gap-3 px-4 py-3 border border-gold-400 bg-gold-50/50 dark:bg-gold-900/20 rounded-xl">
+              <AttachIcon />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{file.name}</p>
+                <p className="text-xs text-gray-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+              </div>
+              <button type="button" onClick={removeFile} className="text-gray-400 hover:text-red-500 transition-colors">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
-            <input type="file" className="hidden" />
-          </label>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">File upload is UI-only in this version</p>
+          ) : (
+            <label className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer hover:border-gold-400 hover:bg-gold-50/50 dark:hover:bg-gold-900/20 transition-all duration-200">
+              <AttachIcon />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Click to upload a file</p>
+                <p className="text-xs text-gray-400">PDF, PNG, JPG up to 10MB</p>
+              </div>
+              <input id="file-input" type="file" onChange={handleFileChange} className="hidden" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx" />
+            </label>
+          )}
         </div>
 
         <button

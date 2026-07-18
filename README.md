@@ -2,7 +2,6 @@
 
 A full-stack web application that helps BookLeaf's operations team handle author support queries faster with AI-assisted classification, priority scoring, and response drafting.
 
-Built for the **BookLeaf Publishing Technical Assignment**.
 
 ---
 

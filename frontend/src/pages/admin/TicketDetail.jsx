@@ -456,6 +456,27 @@ export default function TicketDetail() {
                 >
                   {priorities.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
+                {(ticket.status !== 'Resolved' && ticket.status !== 'Closed') && ticket.slaDueAt && (() => {
+                  const due = new Date(ticket.slaDueAt);
+                  const now = new Date();
+                  const diffMs = due.getTime() - now.getTime();
+                  if (diffMs < 0) {
+                    const overdueMins = Math.floor(Math.abs(diffMs) / (1000 * 60));
+                    const overdueHours = Math.floor(overdueMins / 60);
+                    const mins = overdueMins % 60;
+                    return <div className="mt-1.5 inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-medium border bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20">{overdueHours > 0 ? `Overdue by ${overdueHours}h ${mins}m` : `Overdue by ${overdueMins}m`}</div>;
+                  }
+                  const diffMins = Math.floor(diffMs / (1000 * 60));
+                  const diffHours = Math.floor(diffMins / 60);
+                  const mins = diffMins % 60;
+                  if (diffMs < 4 * 60 * 60 * 1000) {
+                    return <div className="mt-1.5 inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-medium border bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20">{diffHours > 0 ? `Due in ${diffHours}h ${mins}m` : `Due in ${diffMins}m`}</div>;
+                  }
+                  return <div className="mt-1.5 inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-medium border bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20">{diffHours > 0 ? `Due in ${diffHours}h ${mins}m` : `Due in ${diffMins}m`}</div>;
+                })()}
+                {ticket.escalated && ticket.status !== 'Resolved' && ticket.status !== 'Closed' && (
+                  <div className="mt-1.5 inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-medium border bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/20">Escalated</div>
+                )}
               </div>
 
               <div>
@@ -469,6 +490,24 @@ export default function TicketDetail() {
                     <option key={admin._id} value={admin._id}>{admin.name}</option>
                   ))}
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Escalation</label>
+                <button
+                  onClick={() => updateField('escalated', !ticket.escalated)}
+                  disabled={updating}
+                  className={`w-full px-3 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200 ${
+                    ticket.escalated
+                      ? 'bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500/20'
+                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {ticket.escalated ? 'Unescalate Ticket' : 'Mark as Escalated'}
+                </button>
+                {ticket.escalated && ticket.status !== 'Resolved' && ticket.status !== 'Closed' && (
+                  <div className="mt-1.5 inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-medium border bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/20">Escalated</div>
+                )}
               </div>
             </div>
 

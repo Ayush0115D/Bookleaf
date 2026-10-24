@@ -3,7 +3,10 @@ const setupSocket = (io) => {
     console.log(`Socket connected: ${socket.id}`);
 
     socket.on('join:author', (authorId) => {
-      socket.join(`author:${authorId}`);
+      if (authorId) {
+        socket.join(`author:${authorId}`);
+        socket.join(`user:${authorId}`);
+      }
       console.log(`Socket ${socket.id} joined author:${authorId}`);
     });
 
@@ -12,8 +15,14 @@ const setupSocket = (io) => {
       console.log(`Socket ${socket.id} joined admin:room`);
     });
 
+    socket.on('join:user', (userId) => {
+      if (userId) {
+        socket.join(`user:${userId}`);
+      }
+    });
+
     socket.on('leave:author', (authorId) => {
-      socket.leave(`author:${authorId}`);
+      if (authorId) socket.leave(`author:${authorId}`);
     });
 
     socket.on('leave:admin', () => {

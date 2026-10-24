@@ -17,6 +17,7 @@ const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
 const ticketRoutes = require('./routes/tickets');
 const adminRoutes = require('./routes/admin');
+const notificationRoutes = require('./routes/notifications');
 
 const app = express();
 const server = http.createServer(app);
@@ -60,6 +61,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.use(errorHandler);
 

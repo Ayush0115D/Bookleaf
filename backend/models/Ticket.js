@@ -88,6 +88,26 @@ const ticketSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  firstResponseAt: {
+    type: Date,
+    default: null,
+  },
+  slaDueAt: {
+    type: Date,
+    default: null,
+  },
+  slaBreached: {
+    type: Boolean,
+    default: false,
+  },
+  escalated: {
+    type: Boolean,
+    default: false,
+  },
+  escalatedAt: {
+    type: Date,
+    default: null,
+  },
   aiClassified: {
     type: Boolean,
     default: false,

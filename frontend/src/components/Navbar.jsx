@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import api from '../services/api';
+import socket from '../services/socket';
 
 function SettingsIcon() {
   return (
@@ -70,6 +72,15 @@ function ChevronDownIcon() {
   );
 }
 
+function BellIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+  );
+}
+
 function LayoutDashboardIcon() {
   return (
     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -109,6 +120,62 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const notifRef = useRef(null);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (!user) return;
+      try {
+        const res = await api.get('/notifications');
+        setNotifications(res.data.notifications || []);
+        setUnreadCount(res.data.unreadCount || 0);
+      } catch (e) {
+        // ignore
+      }
+    };
+    fetchNotifications();
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    try {
+      const uid = user._id || user.id;
+      socket.emit('join:user', uid);
+      if (user.role === 'author') {
+        socket.emit('join:author', uid);
+      } else if (user.role === 'admin') {
+        socket.emit('join:admin');
+      }
+      if (!socket.connected) {
+        socket.connect();
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    const handleNotification = (notification) => {
+      setNotifications((prev) => [notification, ...prev].slice(0, 50));
+      setUnreadCount((prev) => prev + 1);
+    };
+
+    socket.on('notification:new', handleNotification);
+    return () => {
+      socket.off('notification:new', handleNotification);
+    };
+  }, [user]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setNotifOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -187,9 +254,100 @@ export default function Navbar() {
               {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
             </button>
 
+            {user && (
+              <div className="relative" ref={notifRef}>
+                <button
+                  onClick={() => {
+                    setNotifOpen(!notifOpen);
+                    setProfileOpen(false);
+                  }}
+                  className="relative flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gold-400 hover:bg-gold-500/5 transition-all duration-200"
+                  title="Notifications"
+                >
+                  <BellIcon />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-rose-500 text-white text-[9px] font-semibold">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {notifOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setNotifOpen(false)} />
+                    <div className="absolute right-0 mt-2 w-80 rounded-xl bg-navy-800 border border-gold-500/10 shadow-2xl shadow-black/40 overflow-hidden z-20 animate-fade-in">
+                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-gold-500/10">
+                        <p className="text-sm font-semibold text-gray-100">Notifications</p>
+                        {unreadCount > 0 && (
+                          <button
+                            onClick={async () => {
+                              try {
+                                await api.patch('/notifications/read-all');
+                                setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+                                setUnreadCount(0);
+                              } catch (e) {
+                                // ignore
+                              }
+                            }}
+                            className="text-xs text-gold-400 hover:text-gold-300 transition-colors"
+                          >
+                            Mark all as read
+                          </button>
+                        )}
+                      </div>
+                      <div className="max-h-80 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <div className="px-4 py-6 text-center text-sm text-gray-500">No notifications</div>
+                        ) : (
+                          notifications.map((n) => (
+                            <button
+                              key={n._id || Math.random()}
+                              onClick={async () => {
+                                setNotifOpen(false);
+                                if (n._id) {
+                                  try {
+                                    await api.patch(`/notifications/${n._id}/read`);
+                                    setNotifications((prev) =>
+                                      prev.map((x) => (x._id === n._id ? { ...x, read: true } : x))
+                                    );
+                                    setUnreadCount((prev) => Math.max(0, prev - 1));
+                                  } catch (e) {
+                                    // ignore
+                                  }
+                                }
+                                if (n.link) {
+                                  navigate(n.link);
+                                }
+                              }}
+                              className={`w-full text-left px-4 py-3 border-b border-gold-500/5 last:border-0 hover:bg-gold-500/5 transition-colors ${
+                                !n.read ? 'bg-gold-500/5' : ''
+                              }`}
+                            >
+                              <div className="flex items-start gap-2.5">
+                                <div className={`mt-0.5 w-1.5 h-1.5 rounded-full ${!n.read ? 'bg-gold-400' : 'bg-transparent'}`} />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium text-gray-100 truncate">{n.title}</p>
+                                  <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{n.message}</p>
+                                  {n.createdAt && (
+                                    <p className="text-[10px] text-gray-500 mt-1">
+                                      {new Date(n.createdAt).toLocaleString()}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
             <div className="relative">
               <button
-                onClick={() => setProfileOpen(!profileOpen)}
+                onClick={() => { setProfileOpen(!profileOpen); setNotifOpen(false); }}
                 className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-gold-400 hover:bg-gold-500/5 transition-all duration-200"
               >
                 <div className="w-6 h-6 rounded-md bg-gradient-to-br from-gold-500 to-gold-700 flex items-center justify-center text-white text-[10px] font-bold">

@@ -18,6 +18,31 @@ const priorityColors = {
   Low: 'bg-gray-50 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/20',
 };
 
+const getSlaInfo = (ticket) => {
+  if (!ticket.slaDueAt) return null;
+  const due = new Date(ticket.slaDueAt);
+  const now = new Date();
+  const diffMs = due.getTime() - now.getTime();
+  if (diffMs < 0) {
+    const overdueMins = Math.floor(Math.abs(diffMs) / (1000 * 60));
+    const overdueHours = Math.floor(overdueMins / 60);
+    const mins = overdueMins % 60;
+    if (overdueHours > 0) {
+      return { text: `Overdue by ${overdueHours}h ${mins}m`, className: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20' };
+    }
+    return { text: `Overdue by ${overdueMins}m`, className: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20' };
+  }
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMins / 60);
+  const mins = diffMins % 60;
+  if (diffMs < 4 * 60 * 60 * 1000) {
+    if (diffHours > 0) return { text: `Due in ${diffHours}h ${mins}m`, className: 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20' };
+    return { text: `Due in ${diffMins}m`, className: 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20' };
+  }
+  if (diffHours > 0) return { text: `Due in ${diffHours}h ${mins}m`, className: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' };
+  return { text: `Due in ${diffMins}m`, className: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' };
+};
+
 const categories = [
   'Royalty & Payments',
   'ISBN & Metadata Issues',
@@ -230,9 +255,25 @@ export default function TicketQueue() {
                     </span>
                   </td>
                   <td className="px-4 sm:px-6 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${priorityColors[ticket.priority] || 'bg-gray-50 text-gray-700 border-gray-200'}`}>
-                      {ticket.priority}
-                    </span>
+                    <div className="flex flex-col gap-1">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${priorityColors[ticket.priority] || 'bg-gray-50 text-gray-700 border-gray-200'}`}>
+                        {ticket.priority}
+                      </span>
+                      {(ticket.status !== 'Resolved' && ticket.status !== 'Closed') && (() => {
+                        const sla = getSlaInfo(ticket);
+                        if (!sla) return null;
+                        return (
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-medium border ${sla.className}`}>
+                            {sla.text}
+                          </span>
+                        );
+                      })()}
+                      {ticket.escalated && ticket.status !== 'Resolved' && ticket.status !== 'Closed' && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-medium border bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/20">
+                          Escalated
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">
                     {new Date(ticket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

@@ -2,6 +2,40 @@ const Ticket = require('../models/Ticket');
 const { uploadFile } = require('../services/cloudinary');
 const { autoCloseResolvedTickets } = require('../services/autoClose');
 const { validationResult } = require('express-validator');
+const Notification = require('../models/Notification');
+const User = require('../models/User');
+
+const SLA_HOURS = {
+  Critical: 4,
+  High: 24,
+  Medium: 48,
+  Low: 72,
+};
+
+const setSlaDue = (ticket) => {
+  const hours = SLA_HOURS[ticket.priority] || 48;
+  ticket.slaDueAt = new Date(Date.now() + hours * 60 * 60 * 1000);
+};
+
+const createNotification = async (io, { userId, type, title, message, link, ticketId }) => {
+  try {
+    const notification = await Notification.create({
+      userId,
+      type,
+      title,
+      message,
+      link,
+      ticketId,
+    });
+    if (io && userId) {
+      io.to(`author:${userId}`).to('admin:room').emit('notification:new', notification);
+      io.to(`user:${userId}`).emit('notification:new', notification);
+    }
+    return notification;
+  } catch (err) {
+    console.error('Failed to create notification:', err.message);
+  }
+};
 
 exports.replyToTicket = async (req, res, next) => {
   try {
@@ -43,6 +77,29 @@ exports.replyToTicket = async (req, res, next) => {
       io.to('admin:room').emit('ticket:updated', populated);
     }
 
+    // Notify admins of author reply
+    try {
+      await createNotification(io, {
+        userId: ticket.assignedTo || null,
+        type: 'ticket_replied',
+        title: 'New reply from author',
+        message: `Reply on ticket: ${ticket.subject}`,
+        link: `/admin/tickets/${ticket._id}`,
+        ticketId: ticket._id,
+      });
+      // Also notify admins in general via admin room? We'll emit generic notification to admin room by broadcasting
+      io.to('admin:room').emit('notification:new', {
+        type: 'ticket_replied',
+        title: 'New reply from author',
+        message: `Reply on ticket: ${ticket.subject}`,
+        link: `/admin/tickets/${ticket._id}`,
+        ticketId: ticket._id,
+        createdAt: new Date(),
+      });
+    } catch (e) {
+      console.error('notify failed', e.message);
+    }
+
     res.json({ ticket: populated });
   } catch (error) {
     next(error);
@@ -66,6 +123,9 @@ exports.createTicket = async (req, res, next) => {
       messages: [{ sender: 'author', text: description }],
     });
 
+    // Set SLA based on priority (default Medium)
+    setSlaDue(ticket);
+
     if (req.file) {
       try {
         const uploaded = await uploadFile(req.file.buffer, req.file.originalname);
@@ -85,6 +145,30 @@ exports.createTicket = async (req, res, next) => {
     if (io) {
       io.to(`author:${req.user._id}`).emit('ticket:created', populatedTicket);
       io.to('admin:room').emit('ticket:new', populatedTicket);
+      // Notify all admins
+      try {
+        const admins = await User.find({ role: 'admin' }).select('_id');
+        const notificationData = {
+          type: 'ticket_created',
+          title: 'New ticket received',
+          message: `${req.user.name || 'Author'} created: ${ticket.subject}`,
+          link: `/admin/tickets/${ticket._id}`,
+          ticketId: ticket._id,
+        };
+        for (const admin of admins) {
+          await createNotification(io, { userId: admin._id, ...notificationData, link: `/admin/tickets/${ticket._id}` });
+          io.to(`user:${admin._id}`).emit('notification:new', {
+            ...notificationData,
+            createdAt: new Date(),
+          });
+        }
+        io.to('admin:room').emit('notification:new', {
+          ...notificationData,
+          createdAt: new Date(),
+        });
+      } catch (e) {
+        console.error('Failed to notify admins:', e.message);
+      }
     }
 
     res.status(201).json({ ticket: populatedTicket });
@@ -96,6 +180,18 @@ exports.createTicket = async (req, res, next) => {
 exports.getMyTickets = async (req, res, next) => {
   try {
     await autoCloseResolvedTickets();
+    // Backfill SLA for existing tickets
+    try {
+      const ticketsWithoutSla = await Ticket.find({ authorId: req.user._id, slaDueAt: null });
+      const SLA_HOURS_BACKFILL = { Critical: 4, High: 24, Medium: 48, Low: 72 };
+      for (const t of ticketsWithoutSla) {
+        const hours = SLA_HOURS_BACKFILL[t.priority] || 48;
+        t.slaDueAt = new Date(t.createdAt.getTime() + hours * 60 * 60 * 1000);
+        await t.save();
+      }
+    } catch (e) {
+      console.error('SLA backfill failed:', e.message);
+    }
     const tickets = await Ticket.find({ authorId: req.user._id })
       .populate('bookId', 'title isbn')
       .sort({ updatedAt: -1 });

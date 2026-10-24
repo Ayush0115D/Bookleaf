@@ -408,19 +408,54 @@ export default function TicketDetail() {
               <button
                 onClick={async () => {
                   try {
-                    showMessage('Re-classifying with AI...');
+                    setUpdating(true);
                     const res = await api.post(`/admin/tickets/${id}/reclassify`);
-                    setTicket(res.data.ticket);
-                    showMessage('AI re-classification complete');
+                    if (res.data.aiResult) {
+                      setTicket((prev) => ({ ...prev, _aiSuggestedPriority: res.data.aiResult.priority, _aiSuggestedCategory: res.data.aiResult.category }));
+                      showMessage(`AI suggests: ${res.data.aiResult.priority} priority | ${res.data.aiResult.category}`);
+                      setTimeout(() => setMessage(''), 4000);
+                    }
                   } catch {
                     showMessage('Re-classification failed', 'error');
+                  } finally {
+                    setUpdating(false);
                   }
                 }}
-                className="w-full inline-flex items-center justify-center gap-2 bg-purple-600 text-white py-2 rounded-xl text-sm font-medium hover:bg-purple-700 transition-all duration-200 shadow-sm shadow-purple-200"
+                disabled={updating}
+                className="w-full inline-flex items-center justify-center gap-2 bg-purple-600 text-white py-2 rounded-xl text-sm font-medium hover:bg-purple-700 transition-all duration-200 shadow-sm shadow-purple-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <SparklesIcon />
-                Re-classify with AI
+                {updating ? 'Analyzing...' : 'Re-classify with AI'}
               </button>
+              {ticket._aiSuggestedPriority && (
+                <div className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl">
+                  <p className="text-xs text-purple-700 dark:text-purple-300 mb-2">
+                    Suggested: <span className="font-semibold">{ticket._aiSuggestedPriority}</span> • {ticket._aiSuggestedCategory}
+                  </p>
+                  <button
+                    onClick={async () => {
+                      try {
+                        setUpdating(true);
+                        const res = await api.patch(`/admin/tickets/${id}`, { priority: ticket._aiSuggestedPriority, category: ticket._aiSuggestedCategory });
+                        if (res.data.ticket) {
+                          setTicket(res.data.ticket);
+                        }
+                        setTicket((prev) => ({ ...prev, _aiSuggestedPriority: null, _aiSuggestedCategory: null }));
+                        showMessage('Priority & category updated');
+                        setTimeout(() => setMessage(''), 2000);
+                      } catch (e) {
+                        showMessage('Failed to apply', 'error');
+                      } finally {
+                        setUpdating(false);
+                      }
+                    }}
+                    disabled={updating}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 text-white py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    Accept & Apply
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -523,34 +558,51 @@ export default function TicketDetail() {
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Internal Notes</h3>
-            <div className="space-y-3 mb-4 max-h-40 overflow-y-auto">
-              {ticket.internalNotes?.length === 0 && (
-                <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">No internal notes</p>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100">Internal Notes</h3>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{ticket.internalNotes?.length || 0} {ticket.internalNotes?.length === 1 ? 'note' : 'notes'}</span>
+            </div>
+            <div className="space-y-3 mb-4 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+              {(!ticket.internalNotes || ticket.internalNotes.length === 0) && (
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <p className="text-sm text-gray-400 dark:text-gray-500">No internal notes yet</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Only visible to admins</p>
+                </div>
               )}
               {ticket.internalNotes?.map((note, i) => (
-                <div key={i} className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 p-3 rounded-xl text-sm animate-fade-in">
-                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-1">
-                    <span className="w-5 h-5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 flex items-center justify-center text-[10px] font-bold">
-                      {note.adminId?.name?.charAt(0) || 'A'}
-                    </span>
-                    {note.adminId?.name || 'Admin'} — {new Date(note.timestamp).toLocaleString()}
+                <div key={i} className="bg-amber-50/70 dark:bg-amber-900/10 border border-amber-200/60 dark:border-amber-800/60 p-3.5 rounded-xl text-sm">
+                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center text-[10px] font-semibold">
+                        {note.adminId?.name?.charAt(0)?.toUpperCase() || 'A'}
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-gray-900 dark:text-gray-100">{note.adminId?.name || 'Admin'}</p>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400">{new Date(note.timestamp).toLocaleString()}</p>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300">{note.text}</p>
+                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{note.text}</p>
                 </div>
               ))}
             </div>
-            <textarea
-              value={internalNote} onChange={(e) => setInternalNote(e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gold-500 transition-shadow duration-200" rows="2"
-              placeholder="Add an internal note..."
-            />
-            <button
-              onClick={addInternalNote} disabled={!internalNote.trim()}
-              className="mt-2 w-full bg-gray-700 text-white py-2 rounded-xl text-sm font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              Add Note
-            </button>
+            <div className="flex flex-col gap-2">
+              <textarea
+                value={internalNote} 
+                onChange={(e) => setInternalNote(e.target.value)}
+                className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-400 transition-all duration-200 resize-none" 
+                rows="2"
+                placeholder="Write a private note for other admins..."
+              />
+              <button
+                onClick={addInternalNote}
+                disabled={updating || !internalNote.trim()}
+                className="self-end inline-flex items-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Add Note
+              </button>
+            </div>
+           
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">

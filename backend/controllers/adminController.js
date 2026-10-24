@@ -400,23 +400,22 @@ exports.generateDraft = async (req, res, next) => {
 
 exports.reclassifyTicket = async (req, res, next) => {
   try {
-    const ticket = await Ticket.findById(req.params.id);
+    const ticket = await Ticket.findById(req.params.id).populate('messages');
     if (!ticket) {
       return res.status(404).json({ error: 'Ticket not found' });
     }
 
-    const aiResult = await classifyTicket(ticket.subject, ticket.description);
-    ticket.category = aiResult.category;
-    ticket.priority = aiResult.priority;
-    ticket.aiClassified = true;
-    await ticket.save();
+    const conversation = (ticket.messages || [])
+      .slice(-6)
+      .map((m) => `${m.sender}: ${m.text}`)
+      .join('\n');
 
-    const populated = await Ticket.findById(ticket._id)
-      .populate('authorId', 'name email')
-      .populate('bookId', 'title isbn')
-      .populate('assignedTo', 'name email');
+    const aiResult = await classifyTicket(
+      ticket.subject,
+      conversation || ticket.description
+    );
 
-    res.json({ ticket: populated, aiResult });
+    res.json({ aiResult });
   } catch (error) {
     next(error);
   }

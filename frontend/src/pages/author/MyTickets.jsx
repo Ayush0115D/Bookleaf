@@ -155,9 +155,16 @@ export default function MyTickets() {
                   </span>
                 </div>
                 <h3 className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">{ticket.subject}</h3>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">
-                  {new Date(ticket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} · {ticket.category}
-                </p>
+                <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    {new Date(ticket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} · {ticket.category}
+                  </p>
+                  {ticket.escalated && ticket.status !== 'Resolved' && ticket.status !== 'Closed' && (
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium border bg-purple-500/10 text-purple-400 border-purple-500/20">
+                      Escalated
+                    </span>
+                  )}
+                </div>
                 <div className="mt-3 flex items-center gap-2">
                   {ticket.bookId && (
                     <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md">{ticket.bookId.title}</span>
@@ -183,6 +190,11 @@ export default function MyTickets() {
                       {selectedTicket.priority}
                     </span>
                     <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-lg">{selectedTicket.category}</span>
+                    {selectedTicket.escalated && selectedTicket.status !== 'Resolved' && selectedTicket.status !== 'Closed' && (
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border bg-purple-500/10 text-purple-400 border-purple-500/20">
+                        Escalated
+                      </span>
+                    )}
                   </div>
                   <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{selectedTicket.subject}</h2>
                   {selectedTicket.bookId && (

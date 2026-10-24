@@ -44,6 +44,8 @@ Built for the **BookLeaf Publishing Technical Assignment**.
 ### General
 - **Book Cover Upload** — Add cover images when creating a book or upload later via the inline "Add cover" button; upload progress bar shows during transfer
 - **Cover Preview** — Click any cover thumbnail to open a full-size lightbox overlay; close via Esc or click outside
+- **In-App Notifications** — Bell icon in navbar with real-time alerts for tickets, replies, assignments, status changes and escalations
+- **SLA Tracking & Escalation** — Priority-based SLA deadlines (Critical: 4h, High: 24h, Medium: 48h, Low: 72h), overdue/due badges, first-response tracking, and manual escalation with alerts to all admins
 
 ### AI Integration
 - **Gemini 1.5 Flash** — Low-cost, fast model ideal for classification and text generation

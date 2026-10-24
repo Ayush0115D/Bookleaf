@@ -300,42 +300,67 @@ export default function Navbar() {
                           <div className="px-4 py-6 text-center text-sm text-gray-500">No notifications</div>
                         ) : (
                           notifications.map((n) => (
-                            <button
+                            <div
                               key={n._id || Math.random()}
-                              onClick={async () => {
-                                setNotifOpen(false);
-                                if (n._id) {
-                                  try {
-                                    await api.patch(`/notifications/${n._id}/read`);
-                                    setNotifications((prev) =>
-                                      prev.map((x) => (x._id === n._id ? { ...x, read: true } : x))
-                                    );
-                                    setUnreadCount((prev) => Math.max(0, prev - 1));
-                                  } catch (e) {
-                                    // ignore
-                                  }
-                                }
-                                if (n.link) {
-                                  navigate(n.link);
-                                }
-                              }}
-                              className={`w-full text-left px-4 py-3 border-b border-gold-500/5 last:border-0 hover:bg-gold-500/5 transition-colors ${
+                              className={`w-full text-left px-4 py-3 border-b border-gold-500/5 last:border-0 hover:bg-gold-500/5 transition-colors relative group ${
                                 !n.read ? 'bg-gold-500/5' : ''
                               }`}
                             >
-                              <div className="flex items-start gap-2.5">
-                                <div className={`mt-0.5 w-1.5 h-1.5 rounded-full ${!n.read ? 'bg-gold-400' : 'bg-transparent'}`} />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-gray-100 truncate">{n.title}</p>
-                                  <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{n.message}</p>
-                                  {n.createdAt && (
-                                    <p className="text-[10px] text-gray-500 mt-1">
-                                      {new Date(n.createdAt).toLocaleString()}
-                                    </p>
-                                  )}
+                              <button
+                                onClick={async () => {
+                                  setNotifOpen(false);
+                                  if (n._id) {
+                                    try {
+                                      await api.patch(`/notifications/${n._id}/read`);
+                                      setNotifications((prev) =>
+                                        prev.map((x) => (x._id === n._id ? { ...x, read: true } : x))
+                                      );
+                                      setUnreadCount((prev) => Math.max(0, prev - 1));
+                                    } catch (e) {
+                                      // ignore
+                                    }
+                                  }
+                                  if (n.link) {
+                                    navigate(n.link);
+                                  }
+                                }}
+                                className="w-full text-left"
+                              >
+                                <div className="flex items-start gap-2.5">
+                                  <div className={`mt-0.5 w-1.5 h-1.5 rounded-full ${!n.read ? 'bg-gold-400' : 'bg-transparent'}`} />
+                                  <div className="flex-1 min-w-0 pr-4">
+                                    <p className="text-sm font-medium text-gray-100 truncate">{n.title}</p>
+                                    <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{n.message}</p>
+                                    {n.createdAt && (
+                                      <p className="text-[10px] text-gray-500 mt-1">
+                                        {new Date(n.createdAt).toLocaleString()}
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            </button>
+                              </button>
+                              {n._id && (
+                                <button
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    try {
+                                      await api.delete(`/notifications/${n._id}`);
+                                      setNotifications((prev) => prev.filter((x) => x._id !== n._id));
+                                      if (!n.read) setUnreadCount((prev) => Math.max(0, prev - 1));
+                                    } catch (e) {
+                                      // ignore
+                                    }
+                                  }}
+                                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 rounded-md text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+                                  title="Delete notification"
+                                >
+                                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
                           ))
                         )}
                       </div>

@@ -7,6 +7,7 @@ import AuthorDashboard from './pages/author/AuthorDashboard';
 import MyBooks from './pages/author/MyBooks';
 import SubmitTicket from './pages/author/SubmitTicket';
 import MyTickets from './pages/author/MyTickets';
+import FAQ from './pages/author/FAQ';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import TicketQueue from './pages/admin/TicketQueue';
 import TicketDetail from './pages/admin/TicketDetail';
@@ -43,6 +44,7 @@ function AppLayout() {
           <Route path="/author/books" element={<MyBooks />} />
           <Route path="/author/new-ticket" element={<SubmitTicket />} />
           <Route path="/author/tickets" element={<MyTickets />} />
+          <Route path="/author/faq" element={<FAQ />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/tickets" element={<TicketQueue />} />
           <Route path="/admin/tickets/:id" element={<TicketDetail />} />

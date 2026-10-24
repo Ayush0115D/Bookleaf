@@ -31,10 +31,21 @@ function Tickets() {
   );
 }
 
+function HelpCircle() {
+  return (
+    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
 const actions = [
   { to: '/author/books', label: 'My Books', desc: 'Manage titles, track sales & royalties', icon: BookOpen, gradient: 'from-amber-500 to-orange-500' },
   { to: '/author/new-ticket', label: 'Submit Ticket', desc: 'Get help from the publishing team', icon: PlusCircle, gradient: 'from-emerald-500 to-teal-500' },
   { to: '/author/tickets', label: 'My Tickets', desc: 'View status of your support requests', icon: Tickets, gradient: 'from-rose-500 to-pink-500' },
+  { to: '/author/faq', label: 'FAQ', desc: 'Find answers to common questions', icon: HelpCircle, gradient: 'from-blue-500 to-indigo-500' },
 ];
 
 export default function AuthorDashboard() {
@@ -66,7 +77,7 @@ export default function AuthorDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {actions.map((a) => {
           const Icon = a.icon;
           return (
